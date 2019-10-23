@@ -3,7 +3,7 @@
   "//2": "https://docs.npmjs.com/files/package.json",
   "//3": "updating this file will download and update your packages",
   "name": "vkbotbypacmard",
-  "version": "0.5",
+  "version": "0.0.1",
   "description": "A simple Node bot built on longpool server of VK.",
   "main": "index.js",
   "scripts": {
