@@ -1,20 +1,20 @@
 # VKBot
 Bot for VK groups
 # Requerements
-Firstly, you need to install NodeJS to your server or PC,
+1. Firstly, you need to install NodeJS to your server or PC,
 
-You can download it from here: https://nodejs.org/en/
+*You can download it from here: https://nodejs.org/en/
 
-If you are a Linux user, the installation guide is here: https://pacmard.ru/nodejs/guide
+*If you are a Linux user, the installation guide is here: https://pacmard.ru/nodejs/guide
 
-Bot will correctly work ONLY WITH GROUP OAUTH KEY! You can get it in the settings of your group.
-Key needs all permissions. 
+2.Bot will correctly work ONLY WITH GROUP OAUTH KEY! You can get it in the settings of your group.
+*Key needs all permissions. 
 
-Place key in these vars:
+3. Place key in these vars:
 
-let t1ken = 'enter your token here';
+*let t1ken = 'enter your token here';
 
-vk = new VK('enter your token here'); (maybee will be deleted soon as well)
+*vk = new VK('enter your token here'); (maybee will be deleted soon as well)
 
 # Commands
 
