@@ -1,0 +1,46 @@
+{
+  "//1": "describes your app and its dependencies",
+  "//2": "https://docs.npmjs.com/files/package.json",
+  "//3": "updating this file will download and update your packages",
+  "name": "hello-express",
+  "version": "0.0.1",
+  "description": "A simple Node app built on Express, instantly up and running.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.16.3",
+    "node-vk-bot-api": "^2.1.8",
+    "axios": "^0.18.0",
+    "moment": "^2.22.2",
+    "needle": "^2.2.4",
+    "async": "^2.6.1",
+    "lowdb": "^1.0.0",
+    "cheerio": "^0.22.0",
+    "node-vk-sdk": "^1.0.5",
+    "vk-io": "^4.0.0-rc.10",
+    "sync-request": "^6.0.0",
+    "xml2json": "^0.11.2",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.2",
+    "apiai": "^4.0.3",
+    "os": "^0.1.1",
+    "VK-Promise": "^0.5.0",
+    "fs": "^0.0.2",
+    "mysql": "^2.17.1",
+    "twitch-api-v5": "^2.0.4"
+  },
+  "engines": {
+    "node": "8.x"
+  },
+  "repository": {
+    "url": "https://glitch.com/edit/#!/hello-express"
+  },
+  "license": "MIT",
+  "keywords": [
+    "node",
+    "glitch",
+    "express"
+  ]
+}
