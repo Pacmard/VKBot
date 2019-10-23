@@ -2,7 +2,7 @@
   "//1": "describes your app and its dependencies",
   "//2": "https://docs.npmjs.com/files/package.json",
   "//3": "updating this file will download and update your packages",
-  "name": "VKBot by Pacmard",
+  "name": "vkbotbypacmard",
   "version": "0.5",
   "description": "A simple Node bot built on longpool server of VK.",
   "main": "index.js",
