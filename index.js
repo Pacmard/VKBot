@@ -2,16 +2,6 @@ let express = require('express');
 let bodyParser = require('body-parser');
 let app = express();
 const os = require('os');
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static('public'));
-app.get('/', function (request, response) {
-
-	response.sendFile(__dirname + '/views/index.html'); // Путь до HTML
-});
-
-let listener = app.listen(process.env.PORT, function () {
-	console.log('Запущено!')
-});
 
 let t1ken = 'enter your token here';
 const VkBot = require('node-vk-bot-api'),
