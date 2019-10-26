@@ -25,9 +25,25 @@ Bot for VK groups
 
 # Commands
 
-TBD.
+* !перевод word or sentence - translate from any language to Russian and from Russian to English
+* @everyone - mention everyone in this conversation (administrator privilegies requered)
+* разбуди @id1 - send 25 messages with mentioning user, which id is 1 (example, you can mention anyone)
+* кик - kick someone from conversation. You can kick user by mention him with command (!kick @id1), reply to his message, or kick several members replying to their messages with one command (administrator privilegies requered)
+* /q - self-kick from conversation
+* !donate - donate to me
+* !dkb - donate to me by VK Pay
+* !reg - check your or someone registration date (for check someone reg date: !reg @id1 or reply on his/her messege by this command)
+* /alive - check bot status (up or down)
+* !др - check your or someone birthday (for check someone birthday: !др @id1 or reply on his/her messege by this command)
+* !когда - when. just sends a random response.
+* !число number - random number from 0 to your number (example: !число 100 - sends random number from 0 to 100) 
+* !орел и решка - heads or tails 
+* /что лучше - using: /что лучше X или Y . sends random answer (X or Y)
+* погода city - current weather in specified city.
+* !admin - give administrator privilegies (using: !admin @id1)
+* !unadmin - clear user admin rights
+* !apply - сheck for chat administrator privileges on the bot. It is necessary to use only 1 time, after issuing the rights of the administrator of the conversation
 
-Soon I plan to start a sprint, so list of commands will be expanded
 
 # How to support me
 
