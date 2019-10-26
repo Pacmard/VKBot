@@ -281,7 +281,7 @@ bot.command(/^(\/|!)reg/i, (data) => {
             })
           })
       } else {
-        data.reply('Только попробуй еще раз чекнуть у группы, скотина')
+
       }
     } else if (data.message.fwd_messages[0] == undefined && data.message.reply_message != undefined) {
       if (data.message.reply_message.from_id > 0) {
@@ -302,8 +302,6 @@ bot.command(/^(\/|!)reg/i, (data) => {
               //console.log (url,)
             })
           })
-      } else {
-        data.reply('Только попробуй еще раз чекнуть у группы, скотина')
       }
     }
 
@@ -601,11 +599,8 @@ bot.event('message_new', (data) => {
   	let user = data.message.from_id;
     let fff = data.message.action.member_id
  if (fff == -144372147){
- data.reply('Привет! Меня сделал pacmard. Его сайт: pacmard.ru')
+     data.reply('Привет, я робот и меня создал Pacmard. \n\n Прежде чем Вы сможете начать использовать меня, выдайте мне права администратора беседы и затем пропишите команду !apply . После этого весь мой функционал станет доступен Вам.')
 }
-   let admin = 305738074;
-   let admin2 = 261881593;
-   let checksum = 2000000007;
 }
 }) // greeting when entering new conversation
 
