@@ -85,7 +85,7 @@ bot.command(/(\/|@)everyone/i, async (data) => {
     let admin2 = 120158515;
     let admin3 = 305738074;
     let peer = data.message.peer_id;
-    connection.query("SELECT * FROM `yourls_url` WHERE `peer` = ? AND `userid` = ? AND `status` = 3", [peer, user], async function (err, admins, f) {
+    connection.query("SELECT * FROM `yourls_url` WHERE `peer` = ? AND `userid` = ? AND `status` = 3", [peer, user1], async function (err, admins, f) {
         if (admins.length == 1) {
             const regex = /^(?:@everyone).*?([\d]+).*?$/gm;
             var str = data.message.text;
