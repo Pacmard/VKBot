@@ -7,7 +7,7 @@ Bot for VK groups
 
 * If you are a Linux user, the installation guide is here: https://pacmard.ru/nodejs/guide
 
-2. Bot will correctly work ONLY WITH GROUP OAUTH KEY! You can get it in the settings of your group.
+2. Bot will correctly work **ONLY WITH GROUP OAUTH KEY!** You can get it in the settings of your group.
 * Key needs all permissions. 
 
 3. Place key in these vars:
@@ -19,6 +19,12 @@ Bot for VK groups
 4. For commands with checking for bot administrator privileges, the mysql base is required.
 * Set your host, user, password and database name at the top of the code
 * Import table into your database, link to sql file: https://pacmard.ru/yourls_url.sql
+
+5. You need your own yandex translate key
+* place in *key = 'yandex translate token here'*
+
+6. You need your own https://openweathermap.org/api key. 
+* Signup and place in *let weatherToken = "token from https://openweathermap.org/api"*
 
 ### After completing all of the above actions, launch the bot, invite him to the conversation, give the administrator rights of the conversation and send !apply to the conversation, this command will give admin rights to creator of the conversation
 
