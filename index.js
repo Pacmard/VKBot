@@ -449,6 +449,15 @@ bot.command('!нг', (data) => {
     data.reply('Осталось ' + Math.floor((ny.getTime() - now.getTime()) / 86400000) + ' дней');
 }) // time to new year, thanks, google
 
+bot.command('!орел и решка', (data) => {
+    let abc = ['Выпал Орел', 'Выпала Решка']
+    let randomn = Math.floor(Math.random() * (1 - 0 + 1)) + 0;
+    if (randomn == 0){
+        data.reply(abc[0])
+    }else data.reply(abc[1])
+}) // heads or tails
+
+
 bot.command(/(что лучше|что лучше)/i, (data) => {
   try {
     let message = data.message.text
