@@ -18,15 +18,20 @@ var translate = require('yandex-translate')(key)
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'));
-
+var mysql      = require('mysql');
 const parser = require('xml2json');
 var needle = require("needle");
 const axios = require('axios');
 const moment = require('moment');
 let v = 5.101
 var text = 1;
-const admins = [] // admins massive, only numbers (example: 1, 1111, 1112113122 etc.)
-
+const admins = [] // admins massive, only numbers (example: 1, 1111, 1112113122 etc.), will be deleted soon
+var connection = mysql.createConnection({
+    host     : 'localhost', // link to mysql database
+    user     : 'root', // username
+    password : 'smthpsswd', // password
+    database : 'links' // DB name
+});
 
 
 /*
@@ -49,13 +54,6 @@ bot.command(/(\/|!)rand/i, async (data) => {
 */
 
 
-bot.command(/^!admin/i, (data) => {
-
-}) // TODO
-
-bot.command(/^!check/i, async (data) => {
-
-}) // TODO 
 
 bot.command(/^!перевод/i, (data) => {
   const regex = /^(?:!перевод) (.*?)$/gm;
@@ -66,53 +64,52 @@ translate.detect(m[1], function(err, res) {
     translate.translate(m[1], { to: 'ru' }, function(err, res) {
       data.reply('Перевод: ' + res.text);
      });
-  } else data.reply('Функция перевода с Русского на другие языки в разработке.')
+  } else {
+        translate.translate(m[1], { to: 'en' }, function(err, res) {
+
+            data.reply(res.text + ' \n \n С Русского временно можно переводить только на английский. Приносим извинения за неудобства.')
+        })
+    }
 });
-}) // translation from any language, which supportet by Yandex Translator
+}) // translation from any language, which supported by Yandex Translator and from Russian to English
 
 bot.command(/(\/|@)everyone/i, async (data) => {
-let user1 = data.message.from_id;
-let admin2 = 120158515;
-   let admin3 = 305738074;
-  if (admins.includes(user)){
-    const worker = [5024999, 216916273, 301322529, 143094517, 877281, 120158515, 305738074, 6650673]
-          const regex = /^(?:@everyone).*?([\d]+).*?$/gm;
-      var str = data.message.text;
-      var str2 = str.replace(/@everyone/i, '')
-  let cid = data.message.peer_id
-  let uId = data.message.from_id
-  let chatUsersReq = await api('messages.getConversationMembers', { access_token: t1ken, peer_id: cid, v: v }) 
-  let chatUsers = chatUsersReq.response.items
-  var mes;
-  let arr = chatUsers.map(el => el.member_id)  
-  for (var i = 0; i < arr.length; i++) {
-    if (arr[i] > 0) {
-      mes += ' @id' + JSON.stringify(arr[i]) + '(&#8300;)'
-    } else mes += ' @club' + -JSON.stringify(arr[i]) + '(&#8300;)'  
-  }
-  try {
-    
-                    axios.get('https://api.vk.com/method/users.get?access_token=' + t1ken + '&user_ids=' + uId + '&v=' + v)
-                        .then(res => {
-                            let dataa = res.data.response[0]
-                            let user = dataa.id
-               var text = String(mes).replace(/undefined/i, 'Объявление от ' + "@id" + user + "(администратора)")
-               var text = text.replace(/5024999/i, '1')
-               var text = text.replace(/216916273/i, '1')
-               var text = text.replace(/301322529/i, '1')
-               var text = text.replace(/143094517/i, '1')
-               var text = text.replace(/877281/i, '1')
-               var text = text.replace(/120158515/i, '1')
-               var text = text.replace(/305738074/i, '1')
-               var text = text.replace(/6650673/i, '1')
-               var text = text.replace(/82253881/i, '1')
-               data.reply(text)
-                        })
-                } catch (er) {
-                  
-        }
- 
-  }
+    let user1 = data.message.from_id;
+    let admin2 = 120158515;
+    let admin3 = 305738074;
+    let peer = data.message.peer_id;
+    connection.query("SELECT * FROM `yourls_url` WHERE `peer` = ? AND `userid` = ? AND `status` = 3", [peer, user], async function (err, admins, f) {
+        if (admins.length == 1) {
+            const regex = /^(?:@everyone).*?([\d]+).*?$/gm;
+            var str = data.message.text;
+            var str2 = str.replace(/@everyone/i, '')
+            let cid = data.message.peer_id
+            let uId = data.message.from_id
+            let chatUsersReq = await api('messages.getConversationMembers', {access_token: t1ken, peer_id: cid, v: v})
+            let chatUsers = chatUsersReq.response.items
+            var mes;
+            let arr = chatUsers.map(el => el.member_id)
+            for (var i = 0; i < arr.length; i++) {
+                if (arr[i] > 0) {
+                    mes += ' @id' + JSON.stringify(arr[i]) + '(&#8300;)'
+                } else mes += ' @club' + -JSON.stringify(arr[i]) + '(&#8300;)'
+            }
+            try {
+
+                axios.get('https://api.vk.com/method/users.get?access_token=' + t1ken + '&user_ids=' + uId + '&v=' + v)
+                    .then(res => {
+                        let dataa = res.data.response[0]
+                        let user = dataa.id
+                        var text = String(mes).replace(/undefined/i, 'Объявление от ' + "@id" + user + "(администратора)")
+                        var text = text.replace(/305738074/i, '1') // dont mention user, which id is 305738074
+                        data.reply(text)
+                    })
+            } catch (er) {
+
+            }
+
+        } else data.reply('Вы не администратор!')
+    })
 }) // mention everyone in the conversation
 
 bot.command(/^!dkb/i, (data) => {
@@ -135,42 +132,45 @@ let admin3 = 297973760;
      setTimeout(function() {  data.reply('@id'+m[1]) }, 5000)
   }
   }
-}) // send 25 mentiones to user. example: разбуди @id1
+}) // send 25 mentiones to user. example: разбуди @id1, needs to be finished
 
 bot.command(/^кик/i, (data) => {
-  let user = data.message.from_id;
-  if (admins.includes(user)) {
-    if ((data.message.reply_message != undefined) || (data.message.fwd_messages != undefined) || (data.message.reply_message == data.message.fwd_messages)){
-      if ((data.message.reply_message == undefined) && (data.message.fwd_messages.length == 0)) {
-          const regex = /^(?:кик|кусь).*?([\d]+).*?$/gm;
-          const str = data.message.text
-          const m = regex.exec(str);
-          const user_id = m[1];
-          let cid = data.message.peer_id - 2e9
-          if (user != user_id) {
-              api('messages.removeChatUser', { chat_id: cid, member_id: m[1], access_token: t1ken, v: v })
-          }
-      } else
+    let user = data.message.from_id;
+    let peer = data.message.peer_id;
+    connection.query("SELECT * FROM `yourls_url` WHERE `peer` = ? AND `userid` = ? AND `status` = 3", [peer, user], async function (err, admins, f) {
+        if (admins.length == 1) {
+            if ((data.message.reply_message != undefined) || (data.message.fwd_messages != undefined) || (data.message.reply_message == data.message.fwd_messages)){
+                if ((data.message.reply_message == undefined) && (data.message.fwd_messages.length == 0)) {
+                    const regex = /^(?:кик|кусь).*?([\d]+).*?$/gm;
+                    const str = data.message.text
+                    const m = regex.exec(str);
+                    const user_id = m[1];
+                    let cid = data.message.peer_id - 2e9
+                    if (user != user_id) {
+                        api('messages.removeChatUser', { chat_id: cid, member_id: m[1], access_token: t1ken, v: v })
+                    }
+                } else
 
-      if ((data.message.fwd_messages.length == 0) && (data.message.reply_message != undefined)) {
-          let cid = data.message.peer_id - 2e9
-          let user_kicked = data.message.reply_message.from_id
-          if (user_kicked != user) {
-              api('messages.removeChatUser', { chat_id: cid, member_id: user_kicked, access_token: t1ken, v: v })
-          }
-      } else
+                if ((data.message.fwd_messages.length == 0) && (data.message.reply_message != undefined)) {
+                    let cid = data.message.peer_id - 2e9
+                    let user_kicked = data.message.reply_message.from_id
+                    if (user_kicked != user) {
+                        api('messages.removeChatUser', { chat_id: cid, member_id: user_kicked, access_token: t1ken, v: v })
+                    }
+                } else
 
-      if ((data.message.fwd_messages.length != 0) && (data.message.reply_message == undefined)) {
-          let cid = data.message.peer_id - 2e9
-          for (var i = 0; i < data.message.fwd_messages.length; i++) {
-              let user_kicked = data.message.fwd_messages[i].from_id
-              if (user_kicked > 1 && user_kicked != user) {
-                  api('messages.removeChatUser', { chat_id: cid, member_id: user_kicked, access_token: t1ken, v: v })
-              }
-          }
-      } 
-    } else data.reply('Укажите пользователя, которого вы хотите кикнуть')
-  }
+                if ((data.message.fwd_messages.length != 0) && (data.message.reply_message == undefined)) {
+                    let cid = data.message.peer_id - 2e9
+                    for (var i = 0; i < data.message.fwd_messages.length; i++) {
+                        let user_kicked = data.message.fwd_messages[i].from_id
+                        if (user_kicked > 1 && user_kicked != user) {
+                            api('messages.removeChatUser', { chat_id: cid, member_id: user_kicked, access_token: t1ken, v: v })
+                        }
+                    }
+                }
+            } else data.reply('Укажите пользователя, которого вы хотите кикнуть')
+        }
+    })
 }) // kick specific member, you can kick one or more users by replying messages or kick one user by mention
 /*
 bot.command(/^(\/|!)m/i, (data) => {
@@ -183,7 +183,9 @@ bot.command(/^(\/|!)id$/, (data) => {
 	if (data.message.fwd_messages[0] != undefined && data.message.reply_message == undefined) id = data.message.fwd_messages[0].from_id
 	if (data.message.fwd_messages[0] == undefined && data.message.reply_message != undefined) id = data.message.reply_message.from_id
 	data.reply(id) 
-}) // command returns id of specific user*/
+}) // command returns id of specific user
+*/
+
 bot.command(/^(\/|!)cid$/, (data) => {
   	      let peer = data.message.peer_id
         	let cid = data.message.peer_id - 2e9
@@ -517,6 +519,68 @@ bot.command(/^погода/i, (msg) => {
 			})
 	}
 }) // weather of specific city. usage: !погода Москва
+
+
+bot.command(/^!admin/i, (data) => {
+    let peer = data.message.peer_id;
+    let user = data.message.from_id;
+    const regex = /^(?:!admin|!админ).*?([\d]+).*?$/gm;
+    const str = data.message.text
+    const m = regex.exec(str);
+    connection.query("SELECT * FROM `yourls_url` WHERE `peer` = ? AND `userid` = ? AND `status` = 3 AND `botadmin` = 1" , [peer, user], function (err, res, f) {
+        if(res.length == 1){
+            if (m.length != null) {
+                const user_id = m[1];
+                if (user != user_id) {
+                    connection.query("INSERT INTO `yourls_url` (`peer`, `userid`, `status`) VALUES (?, ?, ?);", [peer, user_id, 3], function (error, result, fields) {
+                        data.reply('Права администратора были успешно выданы!')
+                    });
+                } else data.replly('Вы не можете выдать права администратора самому себе, вы и так администратор.')
+            } data.reply('Укажите пользователя, которому необходимо выдать права администратора через упоминание.')
+        } else data.reply('Право на использование данной команды есть только у создателя данной беседы.')
+    });
+})
+
+bot.command('!unadmin', (data) =>{
+    let peer = data.message.peer_id;
+    let user = data.message.from_id;
+    connection.query("SELECT * FROM `yourls_url` WHERE `peer` = ? AND `userid` = ? AND `status` = 3 AND `botadmin` = 1", [peer, user], async function (err, admins, f) {
+        const regex = /^(?:!unadmin).*?([\d]+).*?$/gm;
+        const str = data.message.text
+        const m = regex.exec(str);
+        if (m != null) {
+            const user_id = m[1];
+            if (admins.length == 1) {
+                if (user_id != admins[0].userid) {
+                    connection.query("SELECT * FROM `yourls_url` WHERE `peer` = ? AND `userid` = ? AND `status` = 3", [peer, user_id], async function (err, ress11, f) {
+                        if(ress11.length == 1){
+                            connection.query("DELETE FROM `yourls_url` WHERE `yourls_url`.`id` = ?;", [ress11[0].id], async function (err, ress22, f) {
+                                data.reply('С пользователя успешно сняты права администратора!')
+                            })
+                        } else data.reply('Пользователь не является администратором!')
+                    })
+                } else data.reply('Вы не можете снять права администратора с себя!')
+            } else data.reply('Вы не являетесь создателем беседы для этого действия!')
+        } else data.reply('Упомяните пользователя с которого нужно снять права администратора!')
+    })
+})
+
+bot.command('!apply', (data)=> {
+    let peer = data.message.peer_id;
+    let user = data.message.from_id;
+    api('messages.getConversationsById', { peer_ids: peer, access_token: t1ken, v: v }) .then(res => {
+        if(res.response.count != 0){
+            connection.query("SELECT * FROM `yourls_url` WHERE `peer` = ? AND `status` = 3 AND `botadmin` = 1" , [peer, user], function (err, ress, f) {
+                if (ress.length == 0){
+                    let user_id = res.response.items[0].chat_settings.owner_id
+                    connection.query("INSERT INTO `yourls_url` (`peer`, `userid`, `status`, `botadmin`) VALUES (?, ?, ?, ?);" , [peer, user_id, 3, 1], function (error, result, fields) {
+                        data.reply('Бот успешно проверил наличие прав администратора, создателю беседы выданы права администратора, для выдачи прав другому человеку используйте !admin @id. Приятного использования, с любовью, ваш Pacmard (автор бота)')
+                    });
+                } else data.reply('Бот уже проверил наличие прав администратора и выдал полномочия создателю беседы, повторная проверка не требуется, пожалуйста, не используйте данную команду без надобности.')
+            });
+        } else data.reply('Бот все еще не администратор. Выдайте права администратора для его полноценного функционирования.')
+    })
+})
 
 bot.startPolling()
 
