@@ -20,6 +20,12 @@ Bot for VK groups
 * Set your host, user, password and database name at the top of the code
 * Import table into your database, link to sql file: https://pacmard.ru/yourls_url.sql
 
+5. You need your own yandex translate key
+* place in *key = 'yandex translate token here'
+
+6. You need your own https://openweathermap.org/api key. 
+* Signup and place in *let weatherToken = "token from https://openweathermap.org/api"
+
 ### After completing all of the above actions, launch the bot, invite him to the conversation, give the administrator rights of the conversation and send !apply to the conversation, this command will give admin rights to creator of the conversation
 
 
