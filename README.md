@@ -7,7 +7,7 @@ Bot for VK groups
 
 * If you are a Linux user, the installation guide is here: https://pacmard.ru/nodejs/guide
 
-2. Bot will correctly work ONLY WITH GROUP OAUTH KEY! You can get it in the settings of your group.
+2. Bot will correctly work **ONLY WITH GROUP OAUTH KEY!** You can get it in the settings of your group.
 * Key needs all permissions. 
 
 3. Place key in these vars:
