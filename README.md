@@ -16,6 +16,13 @@ Bot for VK groups
 
 * vk = new VK('enter your token here'); (maybee will be deleted soon as well)
 
+4. For commands with checking for bot administrator privileges, the mysql base is required.
+* Set your host, user, password and database name at the top of the code
+* Import table into your database, link to sql file: https://pacmard.ru/yourls_url.sql
+
+### After completing all of the above actions, launch the bot, invite him to the conversation, give the administrator rights of the conversation and send !apply to the conversation, this command will give admin rights to creator of the conversation
+
+
 # Commands
 
 TBD.
