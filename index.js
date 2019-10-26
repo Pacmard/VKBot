@@ -430,6 +430,18 @@ bot.command(/^(\/|!)когда/i, (msg) => {
     }
 }) // sample of 'when'. sends random answer from massive
 
+bot.command(/^!число/i, (data) => {
+    const regex = /^(?:!число) (.*?)$/gm;
+    const str = data.message.text
+    const m = regex.exec(str);
+    if(m[1] != undefined){
+        let number = m[1];
+      let  min = Math.ceil(0);
+      let  max = Math.floor(number);
+        let its = Math.floor(Math.random() * (max - min + 1)) + min;
+        data.reply('Случайное число от 0 до ' + number + ': ' + its)
+    }
+}) // random number in range of 0 to nubmer you wrote at the command, command example: !число 102
 
 bot.command(/(что лучше|что лучше)/i, (data) => {
   try {
