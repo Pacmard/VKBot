@@ -32,3 +32,7 @@ Soon I plan to start a sprint, so list of commands will be expanded
 # How to support me
 
 You can donate me by this link: https://www.donationalerts.com/r/pacmard
+
+# How to get help with bot
+
+Create Issue in those repository, i'll answer as soon as I can
