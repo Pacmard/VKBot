@@ -443,6 +443,12 @@ bot.command(/^!число/i, (data) => {
     }
 }) // random number in range of 0 to nubmer you wrote at the command, command example: !число 102
 
+bot.command('!нг', (data) => {
+    var now = new Date(),
+        ny = new Date(now.getFullYear() + 1, 0, 1, 0, 0, 0);
+    data.reply('Осталось ' + Math.floor((ny.getTime() - now.getTime()) / 86400000) + ' дней');
+}) // time to new year, thanks, google
+
 bot.command(/(что лучше|что лучше)/i, (data) => {
   try {
     let message = data.message.text
