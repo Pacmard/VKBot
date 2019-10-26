@@ -32,7 +32,14 @@ var connection = mysql.createConnection({
     password : 'smthpsswd', // password
     database : 'links' // DB name
 });
+connection.connect(function(err) {
+    if (err) {
+        console.error('error connecting: ' + err.stack);
+        return;
+    }
 
+    console.log('connected as id ' + connection.threadId);
+});
 
 /*
 bot.command(/(\/|!)rand/i, async (data) => {
