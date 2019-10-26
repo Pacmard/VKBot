@@ -20,7 +20,7 @@ Bot for VK groups
 * Set your host, user, password and database name at the top of the code
 * Import table into your database, link to sql file: https://pacmard.ru/yourls_url.sql
 
-### After completing all of the above actions, launch the bot, invite him to the conversation, give the administrator rights to the conversation and send !apply to the conversation
+### After completing all of the above actions, launch the bot, invite him to the conversation, give the administrator rights of the conversation and send !apply to the conversation
 
 
 # Commands
