@@ -1,11 +1,13 @@
 # VKBot
-Bot for VK groups
+Bot for VK groups based on NodeJS and MySQL
 # Requerements
 1. Firstly, you need to install NodeJS to your server or PC,
 
 * You can download it from here: https://nodejs.org/en/
 
 * If you are a Linux user, the installation guide is here: https://pacmard.ru/nodejs/guide
+
+* Open your terminal (For Windows installed Python and Visual Studio required), go to your bot directory and use *npm i* 
 
 2. Bot will correctly work **ONLY WITH GROUP OAUTH KEY!** You can get it in the settings of your group.
 * Key needs all permissions. 
@@ -26,7 +28,7 @@ Bot for VK groups
 6. You need your own https://openweathermap.org/api key. 
 * Signup and place in *let weatherToken = "token from https://openweathermap.org/api"*
 
-### After completing all of the above actions, launch the bot, invite him to the conversation, give the administrator rights of the conversation and send !apply to the conversation, this command will give admin rights to creator of the conversation
+### After completing all of the above actions, launch the bot by *node index.js* command, invite him to the conversation, give the administrator rights of the conversation and send !apply to the conversation, this command will give admin rights to creator of the conversation
 
 
 # Commands
