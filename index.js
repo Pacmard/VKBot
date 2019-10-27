@@ -593,7 +593,7 @@ bot.command('!ban', (data) => {
     const regex = /^(?:!ban).*?([\d]+).*?$/gm;
     const str = data.message.text
     const m = regex.exec(str);
-    if (m.length != 0) {
+    if (m != null) {
         const user_id = m[1];
         connection.query("SELECT * FROM `yourls_url` WHERE `peer` = ? AND `userid` = ? AND `status` = 3", [peer, user], async function (err, admins, f) {
             if (admins.length == 1) {
@@ -604,14 +604,15 @@ bot.command('!ban', (data) => {
                                 connection.query("INSERT INTO `bans` (`peer`, `userid`) VALUES (?, ?);", [peer, user_id], function (error, result, fields) {
                                     let cid = data.message.peer_id - 2e9
                                     api('messages.removeChatUser', { chat_id: cid, member_id: m[1], access_token: t1ken, v: v })
+                                    data.reply('Пользователь успешно заблокирован!')
                                 })
                             } else data.reply('Пользователь уже заблокирован!')
                         })
-                    } else data.reply('Вы не можете забанить администратора!')
+                    } else data.reply('Вы не можете заблокировать администратора!')
                 })
             } else data.reply('Вы не администратор!')
         })
-    } else data.reply('Укажите, какого пользователя Вы хотите забанить через упоминание!')
+    } else data.reply('Укажите, какого пользователя Вы хотите заблокировать через упоминание!')
 })
 
 bot.command('!unban', (data) => {
@@ -620,7 +621,7 @@ bot.command('!unban', (data) => {
     const regex = /^(?:!unban).*?([\d]+).*?$/gm;
     const str = data.message.text
     const m = regex.exec(str);
-    if (m.length != 0) {
+    if (m != null) {
         const user_id = m[1];
         connection.query("SELECT * FROM `yourls_url` WHERE `peer` = ? AND `userid` = ? AND `status` = 3", [peer, user], async function (err, admins, f) {
             if (admins.length == 1) {
@@ -629,11 +630,11 @@ bot.command('!unban', (data) => {
                         connection.query("DELETE FROM `bans` WHERE `bans`.`id` = ?;", [alreadybanned[0].id], async function (err, ress22, f) {
                             data.reply('Пользователь разблокирован!')
                         })
-                    } else data.reply('Пользователь не забанен!')
+                    } else data.reply('Пользователь не заблокирован!')
                 })
             } else data.reply('Вы не являетесь администратором!')
         })
-    } else data.reply('Укажите пользователя, которого нужно разбанить!')
+    } else data.reply('Укажите пользователя, которого нужно разблокировать!')
 })
 
 bot.startPolling()
