@@ -1,7 +1,7 @@
 # VKBot
 Bot for VK groups based on NodeJS and MySQL
 # Requerements
-1. Firstly, you need to install NodeJS to your server or PC,
+1. Firstly, you need to install NodeJS to your server or PC.
 
 * You can download it from here: https://nodejs.org/en/
 
@@ -22,7 +22,7 @@ Bot for VK groups based on NodeJS and MySQL
 * Set your host, user, password and database name at the top of the code
 * Import table into your database, link to sql file: https://pacmard.ru/yourls_url.sql
 
-5. You need your own yandex translate key
+5. You need your own yandex translate key.
 * place in *key = 'yandex translate token here'*
 
 6. You need your own https://openweathermap.org/api key. 
