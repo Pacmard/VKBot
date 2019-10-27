@@ -21,6 +21,7 @@ Bot for VK groups based on NodeJS and MySQL
 4. For commands with checking for bot administrator privileges, the mysql base is required.
 * Set your host, user, password and database name at the top of the code
 * Import table into your database, link to sql file: https://pacmard.ru/yourls_url.sql
+* For !ban and !unban working import one more table into your database, link to sql file: https://pacmard.ru/bans.sql
 
 5. You need your own yandex translate key.
 * place in *key = 'yandex translate token here'*
@@ -51,6 +52,8 @@ Bot for VK groups based on NodeJS and MySQL
 * !admin - give administrator privilegies (using: !admin @id1)
 * !unadmin - clear user admin rights
 * !apply - сheck for chat administrator privileges on the bot. It is necessary to use only 1 time, after issuing the rights of the administrator of the conversation
+* !ban - ban user in this conversation (using: !ban @id1)
+* !unban - unban user iin this conversation (using: !unban @id1)
 
 
 # How to support me
