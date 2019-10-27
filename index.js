@@ -587,6 +587,55 @@ bot.command('!apply', (data)=> {
     })
 })
 
+bot.command('!ban', (data) => {
+    let peer = data.message.peer_id;
+    let user = data.message.from_id;
+    const regex = /^(?:!ban).*?([\d]+).*?$/gm;
+    const str = data.message.text
+    const m = regex.exec(str);
+    if (m.length != 0) {
+        const user_id = m[1];
+        connection.query("SELECT * FROM `yourls_url` WHERE `peer` = ? AND `userid` = ? AND `status` = 3", [peer, user], async function (err, admins, f) {
+            if (admins.length == 1) {
+                connection.query("SELECT * FROM `yourls_url` WHERE `peer` = ? AND `userid` = ? AND `status` = 3", [peer, user_id], async function (err, creator, f) {
+                    if (creator.length == 0) {
+                        connection.query("SELECT * FROM `bans` WHERE `peer` = ? AND `userid` = ?", [peer, user_id], async function (err, alreadybanned, f) {
+                            if (alreadybanned.length == 0) {
+                                connection.query("INSERT INTO `bans` (`peer`, `userid`) VALUES (?, ?);", [peer, user_id], function (error, result, fields) {
+                                    let cid = data.message.peer_id - 2e9
+                                    api('messages.removeChatUser', { chat_id: cid, member_id: m[1], access_token: t1ken, v: v })
+                                })
+                            } else data.reply('Пользователь уже заблокирован!')
+                        })
+                    } else data.reply('Вы не можете забанить администратора!')
+                })
+            } else data.reply('Вы не можете забанить уже забаненного пользователя!')
+        })
+    } else data.reply('Укажите, какого пользователя Вы хотите забанить через упоминание!')
+})
+
+bot.command('!unban', (data) => {
+    let peer = data.message.peer_id;
+    let user = data.message.from_id;
+    const regex = /^(?:!unban).*?([\d]+).*?$/gm;
+    const str = data.message.text
+    const m = regex.exec(str);
+    if (m.length != 0) {
+        const user_id = m[1];
+        connection.query("SELECT * FROM `yourls_url` WHERE `peer` = ? AND `userid` = ? AND `status` = 3", [peer, user], async function (err, admins, f) {
+            if (admins.length == 1) {
+                connection.query("SELECT * FROM `bans` WHERE `peer` = ? AND `userid` = ?", [peer, user_id], async function (err, alreadybanned, f) {
+                    if (alreadybanned.length == 1) {
+                        connection.query("DELETE FROM `bans` WHERE `bans`.`id` = ?;", [alreadybanned[0].id], async function (err, ress22, f) {
+                            data.reply('Пользователь разблокирован!')
+                        })
+                    } else data.reply('Пользователь не забанен!')
+                })
+            } else data.reply('Вы не являетесь администратором!')
+        })
+    } else data.reply('Укажите пользователя, которого нужно разбанить!')
+})
+
 bot.startPolling()
 
 
@@ -601,6 +650,25 @@ bot.event('message_new', (data) => {
  if (fff == -144372147){
      data.reply('Привет, я робот и меня создал Pacmard. \n\n Прежде чем Вы сможете начать использовать меня, выдайте мне права администратора беседы и затем пропишите команду !apply . После этого весь мой функционал станет доступен Вам.')
 }
+
+     if ((data.message.action.type == chk) || (data.message.action.type == chk2)){
+         if (data.message.action.type == chk) {
+             let banned = data.message.action.member_id;
+             connection.query("SELECT * FROM `bans` WHERE `peer` = ? AND `userid` = ?", [peer, banned], async function (err, alreadybanned, f) {
+                 if(alreadybanned.length == 1){
+                     api('messages.removeChatUser', { chat_id: cid, member_id: banned, access_token: t1ken, v: v })
+                     data.reply('Пользователь заблокирован! Чтобы его добавить, Вам необходимо разбанить его командой !unban')
+                 }
+             })
+         }
+         if (data.message.action.type == chk2) {
+             let banned = data.message.from_id
+             connection.query("SELECT * FROM `bans` WHERE `peer` = ? AND `userid` = ?", [peer, banned], async function (err, alreadybanned, f) {
+                 api('messages.removeChatUser', { chat_id: cid, member_id: banned, access_token: t1ken, v: v })
+                 data.reply('Пользователь заблокирован! Чтобы его добавить, Вам необходимо разбанить его командой !unban')
+             })
+         }
+     }
 }
 }) // greeting when entering new conversation
 
