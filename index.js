@@ -665,8 +665,10 @@ bot.event('message_new', (data) => {
          if (data.message.action.type == chk2) {
              let banned = data.message.from_id
              connection.query("SELECT * FROM `bans` WHERE `peer` = ? AND `userid` = ?", [peer, banned], async function (err, alreadybanned, f) {
-                 api('messages.removeChatUser', { chat_id: cid, member_id: banned, access_token: t1ken, v: v })
-                 data.reply('Пользователь заблокирован! Чтобы его добавить, Вам необходимо разбанить его командой !unban')
+                 if(alreadybanned.length == 1){
+                     api('messages.removeChatUser', { chat_id: cid, member_id: banned, access_token: t1ken, v: v })
+                     data.reply('Пользователь заблокирован! Чтобы его добавить, Вам необходимо разбанить его командой !unban')
+                 }
              })
          }
      }
