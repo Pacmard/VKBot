@@ -20,7 +20,7 @@ Bot for VK groups based on NodeJS and MySQL
 
 4. For commands with checking for bot administrator privileges, the mysql base is required.
 * Set your host, user, password and database name at the top of the code
-* Import table into your database, link to sql file: https://pacmard.ru/yourls_url.sql
+* Import table into your database, link to sql file: https://pacmard.ru/admins.sql
 * For !ban and !unban working import one more table into your database, link to sql file: https://pacmard.ru/bans.sql
 
 5. You need your own yandex translate key.
