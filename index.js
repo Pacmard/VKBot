@@ -85,7 +85,7 @@ bot.command(/(\/|@)everyone/i, async (data) => {
     let admin2 = 120158515;
     let admin3 = 305738074;
     let peer = data.message.peer_id;
-    connection.query("SELECT * FROM `yourls_url` WHERE `peer` = ? AND `userid` = ? AND `status` = 3", [peer, user1], async function (err, admins, f) {
+    connection.query("SELECT * FROM `admins` WHERE `peer` = ? AND `userid` = ? AND `status` = 3", [peer, user1], async function (err, admins, f) {
         if (admins.length == 1) {
             const regex = /^(?:@everyone).*?([\d]+).*?$/gm;
             var str = data.message.text;
@@ -144,7 +144,7 @@ let admin3 = 297973760;
 bot.command(/^кик/i, (data) => {
     let user = data.message.from_id;
     let peer = data.message.peer_id;
-    connection.query("SELECT * FROM `yourls_url` WHERE `peer` = ? AND `userid` = ? AND `status` = 3", [peer, user], async function (err, admins, f) {
+    connection.query("SELECT * FROM `admins` WHERE `peer` = ? AND `userid` = ? AND `status` = 3", [peer, user], async function (err, admins, f) {
         if (admins.length == 1) {
             if ((data.message.reply_message != undefined) || (data.message.fwd_messages != undefined) || (data.message.reply_message == data.message.fwd_messages)){
                 if ((data.message.reply_message == undefined) && (data.message.fwd_messages.length == 0)) {
@@ -532,15 +532,19 @@ bot.command(/^!admin/i, (data) => {
     const regex = /^(?:!admin|!админ).*?([\d]+).*?$/gm;
     const str = data.message.text
     const m = regex.exec(str);
-    connection.query("SELECT * FROM `yourls_url` WHERE `peer` = ? AND `userid` = ? AND `status` = 3 AND `botadmin` = 1" , [peer, user], function (err, res, f) {
+    connection.query("SELECT * FROM `admins` WHERE `peer` = ? AND `userid` = ? AND `status` = 3 AND `botadmin` = 1" , [peer, user], function (err, res, f) {
         if(res.length == 1){
             if (m.length != null) {
                 const user_id = m[1];
                 if (user != user_id) {
-                    connection.query("INSERT INTO `yourls_url` (`peer`, `userid`, `status`) VALUES (?, ?, ?);", [peer, user_id, 3], function (error, result, fields) {
-                        data.reply('Права администратора были успешно выданы!')
-                    });
-                } else data.replly('Вы не можете выдать права администратора самому себе, вы и так администратор.')
+                    connection.query("SELECT * FROM `admins` WHERE `peer` = ? AND `userid` = ? AND `status` = 3" , [peer, user_id], function (err, alreadyadm, f) {
+                        if(alreadyadm.length == 0) {
+                            connection.query("INSERT INTO `admins` (`peer`, `userid`, `status`) VALUES (?, ?, ?);", [peer, user_id, 3], function (error, result, fields) {
+                                data.reply('Права администратора были успешно выданы!')
+                            })
+                        } else data.reply('Пользователь уже администратор!')
+                    })
+                } else data.reply('Вы не можете выдать права администратора самому себе, вы и так администратор.')
             } else data.reply('Укажите пользователя, которому необходимо выдать права администратора через упоминание.')
         } else data.reply('Право на использование данной команды есть только у создателя данной беседы.')
     });
@@ -549,7 +553,7 @@ bot.command(/^!admin/i, (data) => {
 bot.command('!unadmin', (data) =>{
     let peer = data.message.peer_id;
     let user = data.message.from_id;
-    connection.query("SELECT * FROM `yourls_url` WHERE `peer` = ? AND `userid` = ? AND `status` = 3 AND `botadmin` = 1", [peer, user], async function (err, admins, f) {
+    connection.query("SELECT * FROM `admins` WHERE `peer` = ? AND `userid` = ? AND `status` = 3 AND `botadmin` = 1", [peer, user], async function (err, admins, f) {
         const regex = /^(?:!unadmin).*?([\d]+).*?$/gm;
         const str = data.message.text
         const m = regex.exec(str);
@@ -557,9 +561,9 @@ bot.command('!unadmin', (data) =>{
             const user_id = m[1];
             if (admins.length == 1) {
                 if (user_id != admins[0].userid) {
-                    connection.query("SELECT * FROM `yourls_url` WHERE `peer` = ? AND `userid` = ? AND `status` = 3", [peer, user_id], async function (err, ress11, f) {
+                    connection.query("SELECT * FROM `admins` WHERE `peer` = ? AND `userid` = ? AND `status` = 3", [peer, user_id], async function (err, ress11, f) {
                         if(ress11.length == 1){
-                            connection.query("DELETE FROM `yourls_url` WHERE `yourls_url`.`id` = ?;", [ress11[0].id], async function (err, ress22, f) {
+                            connection.query("DELETE FROM `admins` WHERE `admins`.`id` = ?;", [ress11[0].id], async function (err, ress22, f) {
                                 data.reply('С пользователя успешно сняты права администратора!')
                             })
                         } else data.reply('Пользователь не является администратором!')
@@ -575,10 +579,10 @@ bot.command('!apply', (data)=> {
     let user = data.message.from_id;
     api('messages.getConversationsById', { peer_ids: peer, access_token: t1ken, v: v }) .then(res => {
         if(res.response.count != 0){
-            connection.query("SELECT * FROM `yourls_url` WHERE `peer` = ? AND `status` = 3 AND `botadmin` = 1" , [peer, user], function (err, ress, f) {
+            connection.query("SELECT * FROM `admins` WHERE `peer` = ? AND `status` = 3 AND `botadmin` = 1" , [peer, user], function (err, ress, f) {
                 if (ress.length == 0){
                     let user_id = res.response.items[0].chat_settings.owner_id
-                    connection.query("INSERT INTO `yourls_url` (`peer`, `userid`, `status`, `botadmin`) VALUES (?, ?, ?, ?);" , [peer, user_id, 3, 1], function (error, result, fields) {
+                    connection.query("INSERT INTO `admins` (`peer`, `userid`, `status`, `botadmin`) VALUES (?, ?, ?, ?);" , [peer, user_id, 3, 1], function (error, result, fields) {
                         data.reply('Бот успешно проверил наличие прав администратора, создателю беседы выданы права администратора, для выдачи прав другому человеку используйте !admin @id. Приятного использования, с любовью, ваш Pacmard (автор бота)')
                     });
                 } else data.reply('Бот уже проверил наличие прав администратора и выдал полномочия создателю беседы, повторная проверка не требуется, пожалуйста, не используйте данную команду без надобности.')
@@ -595,9 +599,9 @@ bot.command('!ban', (data) => {
     const m = regex.exec(str);
     if (m != null) {
         const user_id = m[1];
-        connection.query("SELECT * FROM `yourls_url` WHERE `peer` = ? AND `userid` = ? AND `status` = 3", [peer, user], async function (err, admins, f) {
+        connection.query("SELECT * FROM `admins` WHERE `peer` = ? AND `userid` = ? AND `status` = 3", [peer, user], async function (err, admins, f) {
             if (admins.length == 1) {
-                connection.query("SELECT * FROM `yourls_url` WHERE `peer` = ? AND `userid` = ? AND `status` = 3", [peer, user_id], async function (err, creator, f) {
+                connection.query("SELECT * FROM `admins` WHERE `peer` = ? AND `userid` = ? AND `status` = 3", [peer, user_id], async function (err, creator, f) {
                     if (creator.length == 0) {
                         connection.query("SELECT * FROM `bans` WHERE `peer` = ? AND `userid` = ?", [peer, user_id], async function (err, alreadybanned, f) {
                             if (alreadybanned.length == 0) {
@@ -623,7 +627,7 @@ bot.command('!unban', (data) => {
     const m = regex.exec(str);
     if (m != null) {
         const user_id = m[1];
-        connection.query("SELECT * FROM `yourls_url` WHERE `peer` = ? AND `userid` = ? AND `status` = 3", [peer, user], async function (err, admins, f) {
+        connection.query("SELECT * FROM `admins` WHERE `peer` = ? AND `userid` = ? AND `status` = 3", [peer, user], async function (err, admins, f) {
             if (admins.length == 1) {
                 connection.query("SELECT * FROM `bans` WHERE `peer` = ? AND `userid` = ?", [peer, user_id], async function (err, alreadybanned, f) {
                     if (alreadybanned.length == 1) {
