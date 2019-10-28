@@ -151,10 +151,16 @@ bot.command(/^кик/i, (data) => {
                     const regex = /^(?:кик|кусь).*?([\d]+).*?$/gm;
                     const str = data.message.text
                     const m = regex.exec(str);
-                    const user_id = m[1];
                     let cid = data.message.peer_id - 2e9
-                    if (user != user_id) {
-                        api('messages.removeChatUser', { chat_id: cid, member_id: m[1], access_token: t1ken, v: v })
+                    if (m != null) {
+                        const user_id = m[1];
+                        if (user != user_id) {
+                            connection.query("SELECT * FROM `admins` WHERE `peer` = ? AND `userid` = ? AND `status` = 3", [peer, user_id], async function (err, kickadmin, f) {
+                                if(kickadmin.length == 0) {
+                                    api('messages.removeChatUser', {chat_id: cid, member_id: m[1], access_token: t1ken, v: v})
+                                } else data.reply('Вы не можете кикнуть администратора!')
+                            })
+                        }
                     }
                 } else
 
@@ -162,7 +168,11 @@ bot.command(/^кик/i, (data) => {
                     let cid = data.message.peer_id - 2e9
                     let user_kicked = data.message.reply_message.from_id
                     if (user_kicked != user) {
-                        api('messages.removeChatUser', { chat_id: cid, member_id: user_kicked, access_token: t1ken, v: v })
+                        connection.query("SELECT * FROM `admins` WHERE `peer` = ? AND `userid` = ? AND `status` = 3", [peer, user_kicked], async function (err, kickadmin1, f) {
+                            if (kickadmin1 == 0) {
+                                api('messages.removeChatUser', {chat_id: cid, member_id: user_kicked, access_token: t1ken, v: v})
+                            } else data.reply('Вы не можете кикнуть администратора!')
+                        })
                     }
                 } else
 
@@ -171,7 +181,11 @@ bot.command(/^кик/i, (data) => {
                     for (var i = 0; i < data.message.fwd_messages.length; i++) {
                         let user_kicked = data.message.fwd_messages[i].from_id
                         if (user_kicked > 1 && user_kicked != user) {
-                            api('messages.removeChatUser', { chat_id: cid, member_id: user_kicked, access_token: t1ken, v: v })
+                            connection.query("SELECT * FROM `admins` WHERE `peer` = ? AND `userid` = ? AND `status` = 3", [peer, user_kicked], async function (err, kickadmin2, f) {
+                                if (kickadmin2 == 0) {
+                                    api('messages.removeChatUser', {chat_id: cid, member_id: user_kicked, access_token: t1ken, v: v })
+                                } else data.reply('Вы не можете кикнуть администратора!')
+                            })
                         }
                     }
                 }
