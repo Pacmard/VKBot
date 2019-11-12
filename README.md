@@ -22,6 +22,7 @@ Bot for VK groups based on NodeJS and MySQL
 * Set your host, user, password and database name at the top of the code
 * Import table into your database, link to sql file: https://pacmard.ru/admins.sql
 * For !ban and !unban working import one more table into your database, link to sql file: https://pacmard.ru/bans.sql
+* For some other commands (like !кикатьвышедших) import one more table into your database, link to sql file: https://pacmard.ru/commands.sql
 
 5. You need your own yandex translate key.
 * place in *key = 'yandex translate token here'*
@@ -54,6 +55,7 @@ Bot for VK groups based on NodeJS and MySQL
 * !apply - сheck for chat administrator privileges on the bot. It is necessary to use only 1 time, after issuing the rights of the administrator of the conversation
 * !ban - ban user in this conversation (using: !ban @id1)
 * !unban - unban user iin this conversation (using: !unban @id1)
+* !кикатьвышедших - Enables or disables the function of excluding people leaving the conversation
 
 
 # How to support me
