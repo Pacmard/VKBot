@@ -655,20 +655,65 @@ bot.command('!unban', (data) => {
     } else data.reply('Укажите пользователя, которого нужно разблокировать!')
 })
 
+bot.command('!кикатьвышедших', (data) => {
+    let peer = data.message.peer_id;
+    let user = data.message.from_id;
+    let commandor = 'exitkick'
+    connection.query("SELECT * FROM `admins` WHERE `peer` = ? AND `userid` = ? AND `status` = 3 AND `botadmin` = 1", [peer, user], async function (err, admins, f) {
+        if(admins.length == 1){
+            connection.query("SELECT * FROM `commands` WHERE `peer` = ? AND `command` = ? AND `status` = 1", [peer, commandor], async function (err, chkcmd, f) {
+                if(chkcmd.length == 1){
+                    connection.query("UPDATE `commands` SET `status` = '0' WHERE `commands`.`id` = ?;", [chkcmd[0].id], function (error, result, fields) {
+                        data.reply('Теперь вышедшие пользователи не будут автоматически исключаться из беседы!')
+                    })
+                } else {
+                    connection.query("SELECT * FROM `commands` WHERE `peer` = ? AND `command` = ? AND `status` = 0", [peer, commandor], async function (err, chkcmd2, f) {
+                        if(chkcmd2.length == 1){
+                            connection.query("UPDATE `commands` SET `status` = '1' WHERE `commands`.`id` = ?;", [chkcmd2[0].id], function (error, result, fields) {
+                                data.reply('Теперь вышедшие пользователи будут автоматически исключаться из беседы!')
+                            })
+                        } else {
+                            connection.query("INSERT INTO `commands` (`peer`, `command`, `status`) VALUES (?, ?, ?);", [peer, commandor, 1], function (error, result, fields) {
+                                data.reply('Теперь вышедшие пользователи будут автоматически исключаться из беседы!')
+                            })
+                        }
+                    })
+                }
+            })
+        } else data.reply('Вы не являетесь создателем данной беседы!')
+    })
+})
+
 bot.startPolling()
 
 
 bot.event('message_new', (data) => {
   let chk = 'chat_invite_user';
   let chk2 = 'chat_invite_user_by_link';
- if (data.message.action != undefined){
+  let chk3 = 'chat_kick_user';
+    if (data.message.action != undefined){
     let peer = data.message.peer_id;
     let cid = data.message.peer_id - 2e9  
   	let user = data.message.from_id;
     let fff = data.message.action.member_id
- if (fff == -144372147){
-     data.reply('Привет, я робот и меня создал Pacmard. \n\n Прежде чем Вы сможете начать использовать меня, выдайте мне права администратора беседы и затем пропишите команду !apply . После этого весь мой функционал станет доступен Вам.')
-}
+ if (fff == -144372147 && data.message.action.type == chk){
+     connection.query("SELECT * FROM `admins` WHERE `peer` = ? AND `status` = 3", [peer], async function (err, ress11, f) {
+         if (ress11.length != 0) {
+             for (var i = 0; i < ress11.length; i++) {
+                 connection.query("DELETE FROM `admins` WHERE `admins`.`id` = ?;", [ress11[i].id], async function (err, ress22, f) { })
+             }
+             data.reply('Данный бот уже находился в данной беседе, список пользователей с правами администратора был обнулен! Выдайте права администратора боту и пропишите команду !apply снова!')
+         } else  data.reply('Привет, я робот и меня создал Pacmard. \n\n Прежде чем Вы сможете начать использовать меня, выдайте мне права администратора беседы и затем пропишите команду !apply . После этого весь мой функционал станет доступен Вам.')
+     })
+ }
+     if (data.message.action.type == chk3 && fff == user){
+         let commandor = 'exitkick'
+         connection.query("SELECT * FROM `commands` WHERE `peer` = ? AND `command` = ? AND `status` = 1", [peer, commandor], async function (err, chkcmd, f) {
+             if(chkcmd.length == 1){
+                 api('messages.removeChatUser', { chat_id: cid, member_id: user, access_token: t1ken, v: v })
+             }
+         })
+     }
 
      if ((data.message.action.type == chk) || (data.message.action.type == chk2)){
          if (data.message.action.type == chk) {
