@@ -22,6 +22,7 @@ Bot for VK groups based on NodeJS and MySQL
 * Set your host, user, password and database name at the top of the code
 * Import table into your database, link to sql file: https://pacmard.ru/admins.sql
 * For !ban and !unban working import one more table into your database, link to sql file: https://pacmard.ru/bans.sql
+* For some other commands (like !кикатьвышедших) import one more table into your database, link to sql file: https://pacmard.ru/commands.sql
 
 5. You need your own yandex translate key.
 * place in *key = 'yandex translate token here'*
@@ -37,7 +38,7 @@ Bot for VK groups based on NodeJS and MySQL
 * !перевод word or sentence - translate from any language to Russian and from Russian to English
 * @everyone - mention everyone in this conversation (administrator privilegies requered)
 * разбуди @id1 - send 25 messages with mentioning user, which id is 1 (example, you can mention anyone)
-* кик - kick someone from conversation. You can kick user by mention him with command (!kick @id1), reply to his message, or kick several members replying to their messages with one command (administrator privilegies requered)
+* !кик - kick someone from conversation. You can kick user by mention him with command (!kick @id1), reply to his message, or kick several members replying to their messages with one command (administrator privilegies requered)
 * /q - self-kick from conversation
 * !donate - donate to me
 * !dkb - donate to me by VK Pay
@@ -54,6 +55,7 @@ Bot for VK groups based on NodeJS and MySQL
 * !apply - сheck for chat administrator privileges on the bot. It is necessary to use only 1 time, after issuing the rights of the administrator of the conversation
 * !ban - ban user in this conversation (using: !ban @id1)
 * !unban - unban user iin this conversation (using: !unban @id1)
+* !кикатьвышедших - Enables or disables the function of excluding people leaving the conversation
 
 
 # How to support me
