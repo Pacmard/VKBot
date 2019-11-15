@@ -141,14 +141,14 @@ let admin3 = 297973760;
   }
 }) // send 25 mentiones to user. example: разбуди @id1, needs to be finished
 
-bot.command(/^кик/i, (data) => {
+bot.command('!кик', (data) => {
     let user = data.message.from_id;
     let peer = data.message.peer_id;
     connection.query("SELECT * FROM `admins` WHERE `peer` = ? AND `userid` = ? AND `status` = 3", [peer, user], async function (err, admins, f) {
         if (admins.length == 1) {
             if ((data.message.reply_message != undefined) || (data.message.fwd_messages != undefined) || (data.message.reply_message == data.message.fwd_messages)){
                 if ((data.message.reply_message == undefined) && (data.message.fwd_messages.length == 0)) {
-                    const regex = /^(?:кик|кусь).*?([\d]+).*?$/gm;
+                    const regex = /^(?:!кик).*?([\d]+).*?$/gm;
                     const str = data.message.text
                     const m = regex.exec(str);
                     let cid = data.message.peer_id - 2e9
