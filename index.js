@@ -124,21 +124,47 @@ bot.command(/^!dkb/i, (data) => {
 api('messages.send', {peer_id: peer, keyboard: dkb, message: 'Клавиатура подана', random_id: '0', access_token: t1ken, v: v })
 }) // donate to me by VK Pay
 
-bot.command(/^разбуди/i, (data) => {
-      let user = data.message.from_id;
-let admin = 376404149;
-let admin2 = 305738074;
-let admin3 = 297973760;
-      const regex = /^(?:разбуди|проснись).*?([\d]+).*?$/gm;
-      const str = data.message.text
-      const m = regex.exec(str);
-      const user_id = m[1]; 
-  if ((user == admin) || (user == admin2) || (user == admin3)) {
-  for(let y=0; y<100; y++){
-     setTimeout(function() {  data.reply('@id'+m[1]) }, 5000)
-  }
-  }
-}) // send 25 mentiones to user. example: разбуди @id1, needs to be finished
+bot.command(/^разбуди/i, async (data) => {
+    let user = data.message.from_id;
+    let peer = data.message.peer_id;
+    connection.query("SELECT * FROM `admins` WHERE `peer` = ? AND `userid` = ? AND `status` = 3", [peer, user], async function (err, admins, f) {
+        if (admins.length == 1) {
+            const regex = /^(?:разбуди|проснись).*?([\d]+).*?$/gm;
+            const str = data.message.text
+            const m = regex.exec(str);
+            if (m != null) {
+                const user_id = m[1];
+                if (user != user_id) {
+                    setTimeout( function () { data.reply('@id' + m[1])}, 5000)
+                    setTimeout( function () { data.reply('@id' + m[1])}, 10000)
+                    setTimeout( function () { data.reply('@id' + m[1])}, 15000)
+                    setTimeout( function () { data.reply('@id' + m[1])}, 20000)
+                    setTimeout( function () { data.reply('@id' + m[1])}, 25000)
+                    setTimeout( function () { data.reply('@id' + m[1])}, 30000)
+                    setTimeout( function () { data.reply('@id' + m[1])}, 35000)
+                    setTimeout( function () { data.reply('@id' + m[1])}, 40000)
+                    setTimeout( function () { data.reply('@id' + m[1])}, 45000)
+                    setTimeout( function () { data.reply('@id' + m[1])}, 50000)
+                } else {
+                    data.reply('Ты дествительно этого хочешь?')
+                    setTimeout( function () { data.reply('Да?')}, 2000)
+                    setTimeout(function () { data.reply('Ну ладно..')}, 3000)
+                    setTimeout( function () { data.reply('@id' + m[1])}, 5000)
+                    setTimeout( function () { data.reply('@id' + m[1])}, 10000)
+                    setTimeout( function () { data.reply('@id' + m[1])}, 15000)
+                    setTimeout( function () { data.reply('@id' + m[1])}, 20000)
+                    setTimeout( function () { data.reply('@id' + m[1])}, 25000)
+                    setTimeout( function () { data.reply('@id' + m[1])}, 30000)
+                    setTimeout( function () { data.reply('@id' + m[1])}, 35000)
+                    setTimeout( function () { data.reply('@id' + m[1])}, 40000)
+                    setTimeout( function () { data.reply('@id' + m[1])}, 45000)
+                    setTimeout( function () { data.reply('@id' + m[1])}, 50000)
+
+                }
+            }
+        }
+    })
+}) // send 10 mentiones to user. example: разбуди @id1, needs to be finished
 
 bot.command('!кик', (data) => {
     let user = data.message.from_id;
