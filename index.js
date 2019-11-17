@@ -25,7 +25,6 @@ const axios = require('axios');
 const moment = require('moment');
 let v = 5.101
 var text = 1;
-const admins = [] // admins massive, only numbers (example: 1, 1111, 1112113122 etc.), will be deleted soon
 var connection = mysql.createConnection({
     host     : 'localhost', // link to mysql database
     user     : 'root', // username
