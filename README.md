@@ -37,7 +37,7 @@ Bot for VK groups based on NodeJS and MySQL
 
 * !перевод word or sentence - translate from any language to Russian and from Russian to English
 * @everyone - mention everyone in this conversation (administrator privilegies requered)
-* разбуди @id1 - send 25 messages with mentioning user, which id is 1 (example, you can mention anyone)
+* разбуди @id1 - send 10 messages with mentioning user, which id is 1 (example, you can mention anyone)
 * !кик - kick someone from conversation. You can kick user by mention him with command (!kick @id1), reply to his message, or kick several members replying to their messages with one command (administrator privilegies requered)
 * /q - self-kick from conversation
 * !donate - donate to me
