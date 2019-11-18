@@ -515,7 +515,7 @@ bot.command(/(что лучше|что лучше)/i, (data) => {
     let rand = random(0, max)
     if (!pick[rand]) {
       // data.reply('А из чего выбирать-то?')
-    } else data.reply("Я думаю, что " + pick[rand] + " лучше") 
+    } else data.reply("Я думаю, что " + pick[rand] + " лучше")
   } catch (er) {
     data.reply('')
   }
