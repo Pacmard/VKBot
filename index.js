@@ -166,7 +166,7 @@ bot.command(/^разбуди/i, async (data) => {
     })
 }) // send 10 mentiones to user. example: разбуди @id1, needs to be finished
 
-bot.command('!кик', (data) => {
+bot.command('!kick', (data) => {
     let user = data.message.from_id;
     let peer = data.message.peer_id;
     connection.query("SELECT * FROM `admins` WHERE `peer` = ? AND `userid` = ? AND `status` = 3", [peer, user], async function (err, admins, f) {
