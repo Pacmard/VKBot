@@ -173,7 +173,7 @@ bot.command('!kick', (data) => {
         if (admins.length == 1) {
             if ((data.message.reply_message != undefined) || (data.message.fwd_messages != undefined) || (data.message.reply_message == data.message.fwd_messages)){
                 if ((data.message.reply_message == undefined) && (data.message.fwd_messages.length == 0)) {
-                    const regex = /^(?:!кик).*?([\d]+).*?$/gm;
+                    const regex = /^(?:!kick).*?([\d]+).*?$/gm;
                     const str = data.message.text
                     const m = regex.exec(str);
                     let cid = data.message.peer_id - 2e9
