@@ -16,7 +16,7 @@ Bot for VK groups based on NodeJS and MySQL
 
 * let t1ken = 'enter your token here';
 
-* vk = new VK('enter your token here'); (maybee will be deleted soon as well)
+* vk = new VK('enter your token here'); (maybe will be deleted soon as well)
 
 4. For commands with checking for bot administrator privileges, the mysql base is required.
 * Set your host, user, password and database name at the top of the code
