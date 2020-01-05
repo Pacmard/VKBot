@@ -40,24 +40,25 @@ connection.connect(function(err) {
     console.log('connected as id ' + connection.threadId);
 });
 
-/*
-bot.command(/(\/|!)rand/i, async (data) => {
-	let peer = data.message.peer_id
-	let cid = data.message.peer_id - 2e9
-  let chatUsersReq = await api('messages.getConversationMembers', { access_token: t1ken, peer_id: peer, v: v }) 
-  let chatUsers = chatUsersReq.response.items 
-  let arr = chatUsers.map(el => el.member_id)
-  let id = arr[getRandomInRange(0, arr.length-1)];
-  api('messages.removeChatUser', { chat_id: cid, user_id: id, access_token: t1ken, v: v }).then(res => {
-	let da = res.data.response[0]
-  data.reply("Успешно")
-  }).catch(er => 
-          {
-        if (id > 0) data.reply('Невозможно исключить ' + '@id' + id + '(данного) ' + 'пользователя')
-      else data.reply('Невозможно исключить ' + '@club' + (-id) + '(данное) ' + 'сообщество')
-			})
-}) // kick random conversation member 
-*/
+bot.command(/!rand/i, async (data) => {
+    let peer = data.message.peer_id
+    let cid = data.message.peer_id - 2e9
+    let user = data.message.from_id;
+    connection.query("SELECT * FROM `admins` WHERE `peer` = ? AND `userid` = ? AND `status` = 3 AND `botadmin` = 1" , [peer, user], function (err, res, f) {
+        if (res.length == 1) {
+            let chatUsersReq = await api('messages.getConversationMembers', {access_token: t1ken, peer_id: peer, v: v})
+            let chatUsers = chatUsersReq.response.items
+            let arr = chatUsers.map(el => el.member_id)
+            let id = arr[getRandomInRange(0, arr.length - 1)];
+            api('messages.removeChatUser', {chat_id: cid, user_id: id, access_token: t1ken, v: v}).then(res => {
+                let da = res.data.response[0]
+            }).catch(er => {
+                if (id > 0) data.reply('Невозможно исключить ' + '@id' + id + '(данного) ' + 'пользователя')
+                else data.reply('Невозможно исключить ' + '@club' + (-id) + '(данное) ' + 'сообщество')
+            })
+        }
+    })
+})
 
 
 
@@ -228,7 +229,7 @@ bot.command(/^(\/|!)id$/, (data) => {
 	if (data.message.fwd_messages[0] == undefined && data.message.reply_message == undefined) id = data.message.from_id
 	if (data.message.fwd_messages[0] != undefined && data.message.reply_message == undefined) id = data.message.fwd_messages[0].from_id
 	if (data.message.fwd_messages[0] == undefined && data.message.reply_message != undefined) id = data.message.reply_message.from_id
-	data.reply(id) 
+	data.reply(id)
 }) // command returns id of specific user
 */
 
@@ -236,7 +237,7 @@ bot.command(/^(\/|!)cid$/, (data) => {
   	      let peer = data.message.peer_id
         	let cid = data.message.peer_id - 2e9
         	data.reply('ChatID: ' + cid + '\n PeerID: ' + peer)
-}) // returns peer and chat id 
+}) // returns peer and chat id
 
 
 bot.command(/^\/q$/, (data) => {
@@ -255,7 +256,7 @@ api('messages.removeChatUser', { chat_id: chat_id, user_id: userKick, access_tok
 
 bot.command(/(я спать|всем пока я спать)/i, (data) => {
   data.reply('споки зайка <3')
-}) // wishes good night 
+}) // wishes good night
 
 bot.command(/(не спать)/i, (data) => {
   data.reply('💔')
@@ -280,7 +281,7 @@ bot.command(/^(\/|!)reg/i, (data) => {
           needle.get(`https://vk.com/foaf.php?id=${info.id}`, function (err, res) {
             if (err) console.log(err)
             let xml = res.body
-            let out = JSON.parse(parser.toJson(xml))["rdf:RDF"]["foaf:Person"]["ya:created"]["dc:date"] // Дата регистрации страницы 
+            let out = JSON.parse(parser.toJson(xml))["rdf:RDF"]["foaf:Person"]["ya:created"]["dc:date"] // Дата регистрации страницы
 
             let unixCreated = moment(out).unix()
             let tzReg = moment.unix(unixCreated).utcOffset(+3)
@@ -293,7 +294,7 @@ bot.command(/^(\/|!)reg/i, (data) => {
       needle.get(`https://vk.com/foaf.php?id=${data.message.from_id}`, function (err, res) {
         if (err) console.log(err)
         let xml = res.body
-        let out = JSON.parse(parser.toJson(xml))["rdf:RDF"]["foaf:Person"]["ya:created"]["dc:date"] // Дата регистрации страницы 
+        let out = JSON.parse(parser.toJson(xml))["rdf:RDF"]["foaf:Person"]["ya:created"]["dc:date"] // Дата регистрации страницы
         let unixCreated = moment(out).unix()
         let tzReg = moment.unix(unixCreated).utcOffset(+3)
         let age = getAgeText(unixCreated)
@@ -310,7 +311,7 @@ bot.command(/^(\/|!)reg/i, (data) => {
             needle.get(`https://vk.com/foaf.php?id=${data.message.fwd_messages[0].from_id}`, function (err, res) {
               if (err) console.log(err)
               let xml = res.body
-              let out = JSON.parse(parser.toJson(xml))["rdf:RDF"]["foaf:Person"]["ya:created"]["dc:date"] // Дата регистрации страницы 
+              let out = JSON.parse(parser.toJson(xml))["rdf:RDF"]["foaf:Person"]["ya:created"]["dc:date"] // Дата регистрации страницы
               let unixCreated = moment(out).unix()
               let tzReg = moment.unix(unixCreated).utcOffset(+3)
               let age = getAgeText(unixCreated)
@@ -332,7 +333,7 @@ bot.command(/^(\/|!)reg/i, (data) => {
             needle.get(`https://vk.com/foaf.php?id=${data.message.reply_message.from_id}`, function (err, res) {
               if (err) console.log(err)
               let xml = res.body
-              let out = JSON.parse(parser.toJson(xml))["rdf:RDF"]["foaf:Person"]["ya:created"]["dc:date"] // Дата регистрации страницы 
+              let out = JSON.parse(parser.toJson(xml))["rdf:RDF"]["foaf:Person"]["ya:created"]["dc:date"] // Дата регистрации страницы
               let unixCreated = moment(out).unix()
               let tzReg = moment.unix(unixCreated).utcOffset(+3)
               let age = getAgeText(unixCreated)
@@ -405,7 +406,7 @@ bot.command(/^(\/|!)др$/i, (cmd) => {
   } else {
     cmd.reply(`Ты чо`)
   }
-}) // check your birthday 
+}) // check your birthday
 
 
 bot.command(/^(\/|!)когда/i, (msg) => {
@@ -522,7 +523,7 @@ bot.command(/(что лучше|что лучше)/i, (data) => {
 }) // using: /что лучше X или Y . sends random answer (X or Y)
 
 
-bot.command(/^погода/i, (msg) => { 
+bot.command(/^погода/i, (msg) => {
 	if (msg.message.peer_id != 2e9 + 42) {
 		let message = msg.message.text;
 		let cityName = encodeURI(message.replace(/погода /i, ''))
@@ -718,7 +719,7 @@ bot.event('message_new', (data) => {
   let chk3 = 'chat_kick_user';
     if (data.message.action != undefined){
     let peer = data.message.peer_id;
-    let cid = data.message.peer_id - 2e9  
+    let cid = data.message.peer_id - 2e9
   	let user = data.message.from_id;
     let fff = data.message.action.member_id
  if (fff == -144372147 && data.message.action.type == chk){
