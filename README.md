@@ -1,7 +1,7 @@
 # VKBot
 Bot for VK groups based on NodeJS and MySQL
 # Requerements
-1. Firstly, you need to install NodeJS to your server or PC.
+1. Firstly, you need to install NodeJS v10 to your server or PC. 
 
 * You can download it from here: https://nodejs.org/en/
 
