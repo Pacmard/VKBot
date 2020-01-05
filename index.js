@@ -44,7 +44,7 @@ bot.command(/!rand/i, async (data) => {
     let peer = data.message.peer_id
     let cid = data.message.peer_id - 2e9
     let user = data.message.from_id;
-    connection.query("SELECT * FROM `admins` WHERE `peer` = ? AND `userid` = ? AND `status` = 3 AND `botadmin` = 1" , [peer, user], function (err, res, f) {
+    connection.query("SELECT * FROM `admins` WHERE `peer` = ? AND `userid` = ? AND `status` = 3 AND `botadmin` = 1" , [peer, user], async function (err, res, f) {
         if (res.length == 1) {
             let chatUsersReq = await api('messages.getConversationMembers', {access_token: t1ken, peer_id: peer, v: v})
             let chatUsers = chatUsersReq.response.items
@@ -56,7 +56,7 @@ bot.command(/!rand/i, async (data) => {
                 if (id > 0) data.reply('Невозможно исключить ' + '@id' + id + '(данного) ' + 'пользователя')
                 else data.reply('Невозможно исключить ' + '@club' + (-id) + '(данное) ' + 'сообщество')
             })
-        }
+        } else data.reply('Эту команду может использовать только создатель беседы!')
     })
 })
 
