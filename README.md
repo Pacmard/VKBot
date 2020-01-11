@@ -1,4 +1,5 @@
 # VKBot
+[![forthebadge](https://forthebadge.com/images/badges/made-with-javascript.svg)](https://forthebadge.com)
 Bot for VK groups based on NodeJS and MySQL
 # Requerements
 1. Firstly, you need to install NodeJS v10 to your server or PC. 
