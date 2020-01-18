@@ -1,5 +1,7 @@
 # VKBot
 Bot for VK groups based on NodeJS and MySQL
+### Warning! Bot was ported to the vk-io module! Updates to the node-vk-bot-api module WILL NOT be released! The bot support on the node-vk-bot-api module will end on March 1, 2020
+
 # Requerements
 1. Firstly, you need to install NodeJS v10 to your server or PC. 
 
