@@ -273,6 +273,12 @@ vk.updates.hear('/alive', data => {
     data.reply('живой')
 })
 
+vk.updates.hear(/^!cid/i, data => {
+    let peer = data.peerId;
+    let cid = data.peerId - 2e9
+    data.reply('ChatID: ' + cid + '\n PeerID: ' + peer)
+})
+
 vk.updates.hear(/^!reg/i, data => {
     let message = data.text
     let uIdReg = message.replace(/(\/|!)reg/i, '').replace(/(([a-zа-я]+:\/\/)?([\w\.]+\.[a-zа-я]{2,6}\.?)(\S)?)/gi, '')
