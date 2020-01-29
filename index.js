@@ -568,8 +568,6 @@ vk.updates.hear(/^!погода/i, data => {
     let message = data.text;
     let cityName = encodeURI(message.replace(/!погода /i, ''))
     let weatherToken = "token from https://openweathermap.org/api"
-    console.log(cityName)
-    console.log(message)
     let url = "https://api.openweathermap.org/data/2.5/weather?&q=" + cityName + '&appid=' + weatherToken + '&lang=ru'
     axios.get(url)
         .then(res => {
@@ -601,7 +599,10 @@ vk.updates.hear(/^!погода/i, data => {
             )
         })
         .catch(er => {
-            data.reply(`Упс.. Что-то пошло не так. Скорее всего, города не существует`)
+            let htmlcode = er.response.status;
+            if (htmlcode == 404) {
+                data.reply(`Упс.. Что-то пошло не так. Скорее всего, города не существует`)
+            }
         })
 })
 
