@@ -838,12 +838,12 @@ function getRandomInRange(min, max) {
 function givewarn(data, peer, user_warned, cid) {
     connection.query("SELECT * FROM `warns` WHERE `peer` = ? AND `userid` = ?", [peer, user_warned], async function (err, chkwrn, f) {
         if (chkwrn.length == 1) {
-            if (chkwrn[0].number < 2 && chkwrn[0].number != 0) {
+            if (chkwrn[0].number == 1) {
                 let nwrn = chkwrn[0].number + 1;
                 connection.query("UPDATE `warns` SET `number` = ? WHERE `warns`.`id` = ?;", [nwrn, chkwrn[0].id], function (error, result, fields) {
                     data.reply('Вам вынесено второе предупреждение, в следующий раз Вы будете исключены из чата и программы! Старайтесь не использовать нецензурную лексику и оскорбления при общении друг с другом!' + ' #user' + user_warned)
                 })
-            } else {
+            } else if (chkwrn[0].number == 2){
                 connection.query("UPDATE `warns` SET `number` = ? WHERE `warns`.`id` = ?;", [3, chkwrn[0].id], function (error, result, fields) {
                     data.reply('Мы неоднократно выносили Вам предупреждения. Вы будете исключены за большое количество нарушений.' + ' #user' + user_warned + ' @vkexperts')
                     vk.api.messages.removeChatUser({
@@ -852,6 +852,10 @@ function givewarn(data, peer, user_warned, cid) {
                         access_token: t1ken,
                         v: v
                     });
+                })
+            } else if (chkwrn[0].number == 0){
+                connection.query("UPDATE `warns` SET `number` = ? WHERE `warns`.`id` = ?;", [1, chkwrn[0].id], function (error, result, fields) {
+                    data.reply('Вам вынесено первое предупреждение, когда их будет 3 Вы будете исключены из чата и программы! Старайтесь не использовать нецензурную лексику и оскорбления при общении друг с другом!' + ' #user' + user_warned)
                 })
             }
         } else {
