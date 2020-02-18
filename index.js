@@ -751,6 +751,56 @@ vk.updates.hear(/^!unadmin/i, data => {
     })
 });
 
+vk.updates.hear(/^!addspec/i, data => {
+    let peer = data.peerId;
+    let user = data.senderId;
+    const regex = /^(?:!addspec).*?([\d]+).*?$/gm;
+    const str = data.text;
+    const m = regex.exec(str);
+    connection.query("SELECT * FROM `admins` WHERE `peer` = ? AND `userid` = ? AND `status` = 3 AND `botadmin` = 1 AND `creator` = 1", [peer, user], function (err, res, f) {
+        if (res.length == 1) {
+            if (m.length != null) {
+                const user_id = m[1];
+                if (user != user_id) {
+                    connection.query("SELECT * FROM `admins` WHERE `peer` = ? AND `userid` = ? AND `status` = 3", [peer, user_id], function (err, alreadyadm, f) {
+                        if (alreadyadm.length == 0) {
+                            connection.query("INSERT INTO `admins` (`peer`, `userid`, `status`, botadmin) VALUES (?, ?, ?, ?);", [peer, user_id, 3, 1], function (error, result, fields) {
+                                data.reply('Права спец.администратора были успешно выданы!')
+                            })
+                        } else connection.query("UPDATE `admins` SET `botadmin` = '1' WHERE `admins`.`id` = ?;", [alreadyadm[0].id], function (error, result, fields) {
+                            data.replt('Пользователь успешно повышен до спец.администратора!')
+                        })
+                    })
+                } else data.reply('Вы не можете выдать права спец.администратора самому себе, вы и так администратор.')
+            } else data.reply('Укажите пользователя, которому необходимо выдать права спец.администратора через упоминание.')
+        }
+    });
+});
+
+vk.updates.hear(/^!remspec/i, data => {
+    let peer = data.peerId;
+    let user = data.senderId;
+    connection.query("SELECT * FROM `admins` WHERE `peer` = ? AND `userid` = ? AND `status` = 3 AND `botadmin` = 1 AND `creator` = 1", [peer, user], async function (err, admins, f) {
+        if (admins.length == 1) {
+            const regex = /^(?:!remspec).*?([\d]+).*?$/gm;
+            const str = data.text;
+            const m = regex.exec(str);
+            if (m != null) {
+                const user_id = m[1];
+                if (user_id != admins[0].userid) {
+                    connection.query("SELECT * FROM `admins` WHERE `peer` = ? AND `userid` = ? AND `status` = 3 AND `botadmin` = 1", [peer, user_id], async function (err, ress11, f) {
+                        if (ress11.length == 1) {
+                            connection.query("DELETE FROM `admins` WHERE `admins`.`id` = ?;", [ress11[0].id], async function (err, ress22, f) {
+                                data.reply('С пользователя успешно сняты права спец.администратора!')
+                            })
+                        } else data.reply('Пользователь не является спец.администратором!')
+                    })
+                } else data.reply('Вы не можете снять права спец.администратора с себя!')
+            } else data.reply('Упомяните пользователя с которого нужно снять права спец.администратора!')
+        } else data.reply('Вы не являетесь создателем беседы для этого действия!')
+    })
+});
+
 vk.updates.hear(/^!пред/i, async data => {
     let peer = data.peerId;
     let user = data.senderId;
