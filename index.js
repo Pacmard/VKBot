@@ -66,6 +66,11 @@ vk.updates.on('message', async (data, next) => {
                         data.reply('Пользователь заблокирован! Чтобы его добавить, Вам необходимо разбанить его командой !unban')
                     }
                 })
+                connection.query("SELECT * FROM `warns` WHERE `peer` = ? AND `userid` = ?", [peer, banned], async function (err, warnedlater, f) {
+                    if(warnedlater.length == 1){
+                        connection.query("UPDATE `warns` SET `number` = ? WHERE `warns`.`id` = ?;", [0, warnedlater[0].id], function (error, result, fields) {})
+                    }
+                })
             }
             if (data.eventType == chk2) {
                 let banned = data.senderId;
@@ -73,6 +78,11 @@ vk.updates.on('message', async (data, next) => {
                     if(alreadybanned.length == 1) {
                         vk.api.messages.removeChatUser({ chat_id: cid, member_id: banned, access_token: t1ken, v: v });
                         data.reply('Пользователь заблокирован! Чтобы его добавить, Вам необходимо разбанить его командой !unban')
+                    }
+                })
+                connection.query("SELECT * FROM `warns` WHERE `peer` = ? AND `userid` = ?", [peer, banned], async function (err, warnedlater, f) {
+                    if(warnedlater.length == 1){
+                        connection.query("UPDATE `warns` SET `number` = ? WHERE `warns`.`id` = ?;", [0, warnedlater[0].id], function (error, result, fields) {})
                     }
                 })
             }
