@@ -78,6 +78,91 @@ vk.updates.on('message', async (data, next) => {
             }
         }
     }
+    const words = transformWords(
+        [] // база мата в формате 'слово1', 'слово2',
+        {   'а' : ['a', '@'],
+            'б' : ['6', 'b'],
+            'в' : ['b', 'v'],
+            'г' : ['r', 'g'],
+            'д' : ['d', 'g'],
+            'е' : ['e'],
+            'ё' : ['е', 'e'],
+            'ж' : ['zh', '*'],
+            'з' : ['3', 'z'],
+            'и' : ['u', 'i'],
+            'й' : ['u', 'y', 'i'],
+            'к' : ['k', 'i{', '|{'],
+            'л' : ['l', 'ji'],
+            'м' : ['m'],
+            'н' : ['h', 'n'],
+            'о' : ['o', '0'],
+            'п' : ['n', 'p'],
+            'р' : ['r', 'p'],
+            'с' : ['c', 's'],
+            'т' : ['m', 't'],
+            'у' : ['y', 'u'],
+            'ф' : ['f'],
+            'х' : ['x', 'h', '}{'],
+            'ц' : ['c', 'u,'],
+            'ч' : ['ch'],
+            'ш' : ['sh'],
+            'щ' : ['sch'],
+            'ь' : ['b'],
+            'ы' : ['bi'],
+            'э' : ['е', 'e'],
+            'ю' : ['io'],
+            'я' : ['ya']}
+    )
+    const regexp = new RegExp(`(^|[^a-zа-яё])(${words.join('|')})($|[^a-zа-яё])`, 'i');
+
+    const hooks = {
+        'а' : ['a', '@'],
+        'б' : ['6', 'b'],
+        'в' : ['b', 'v'],
+        'г' : ['r', 'g'],
+        'д' : ['d', 'g'],
+        'е' : ['e'],
+        'ё' : ['е', 'e'],
+        'ж' : ['zh', '*'],
+        'з' : ['3', 'z'],
+        'и' : ['u', 'i'],
+        'й' : ['u', 'y', 'i'],
+        'к' : ['k', 'i{', '|{'],
+        'л' : ['l', 'ji'],
+        'м' : ['m'],
+        'н' : ['h', 'n'],
+        'о' : ['o', '0'],
+        'п' : ['n', 'p'],
+        'р' : ['r', 'p'],
+        'с' : ['c', 's'],
+        'т' : ['m', 't'],
+        'у' : [ 'y', 'u'],
+        'ф' : ['f'],
+        'х' : ['x', 'h', '}{'],
+        'ц' : ['c', 'u,'],
+        'ч' : ['ch'],
+        'ш' : ['sh'],
+        'щ' : ['sch'],
+        'ь' : ['b'],
+        'ы' : ['bi'],
+        'э' : ['е', 'e'],
+        'ю' : ['io'],
+        'я' : ['ya']
+    }
+
+
+    if (data.text && regexp.test(data.text)) {
+        let user_warned = data.senderId;
+        let peer = data.peerId;
+        let cid = data.peerId - 2e9;
+        let commandor = 'banmat';
+        connection.query("SELECT * FROM `commands` WHERE `peer` = ? AND `command` = ? AND `status` = 1", [peer, commandor], async function (err, chkcmd, f) {
+            if (chkcmd.length == 1) {
+                givewarn(data, peer, user_warned, cid)
+            }
+        })
+    }
+
     return next()
 });
 
@@ -902,4 +987,33 @@ function kick(peer, cid, user_kicked) {
             });
         } else data.reply('Вы не можете кикнуть администратора!')
     })
+}
+
+function escapeRegExpText(text) {
+    return text.replace(
+        /(\*|\{|\})/g,
+        '\\$1'
+    );
+}
+
+function transformWords(words, hooks) {
+    const newWords = [];
+
+    for (let word of words) {
+        const checkedSymbols = new Set();
+        for (const symbol of word) {
+            const replaces = hooks[symbol];
+            if (replaces && !checkedSymbols.has(symbol)) {
+                checkedSymbols.add(symbol);
+                const validSymbol = escapeRegExpText(symbol);
+                const validReplaces = escapeRegExpText(replaces.join('|'));
+                word = word.replace(
+                    new RegExp(validSymbol, 'gi'),
+                    `(${validSymbol}|${validReplaces})`
+                );
+            }
+        }
+        newWords.push(word);
+    }
+    return newWords;
 }
