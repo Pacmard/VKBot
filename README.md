@@ -50,8 +50,8 @@ Bot for VK groups based on NodeJS and MySQL
 * !когда - when. just sends a random response.
 * !число number - random number from 0 to your number (example: !число 100 - sends random number from 0 to 100) 
 * !орел и решка - heads or tails 
-* /что лучше - using: /что лучше X или Y . sends random answer (X or Y)
-* погода city - current weather in specified city.
+* !что лучше - using: /что лучше X или Y . sends random answer (X or Y)
+* !погода city - current weather in specified city.
 * !admin - give administrator privilegies (using: !admin @id1)
 * !unadmin - clear user admin rights
 * !apply - сheck for chat administrator privileges on the bot. It is necessary to use only 1 time, after issuing the rights of the administrator of the conversation
