@@ -183,15 +183,17 @@ vk.updates.hear(/^!rand/i, data => {
 })
 
 vk.updates.hear(/^!перевод/i, data => {
-    let langs = ['aa', 'ab', 'af', 'am', 'an', 'ar', 'as', 'ay', 'az', 'ba', 'be', 'bg', 'bh', 'bi', 'bn', 'bo', 'br', 'ca', 'co', 'cs', 'cy', 'da', 'de', 'dz', 'el', 'en', 'eo', 'es', 'et', 'eu', 'fa', 'fi', 'fj', 'fo', 'fr', 'fy', 'ga', 'gd', 'gl', 'gn', 'gu', 'gv', 'ha', 'he', 'iw', 'hi', 'hr', 'ht', 'hu', 'hy', 'ia', 'id', 'in', 'ie', 'ii', 'ik', 'io', 'is', 'it', 'iu', 'ja', 'jv', 'ka', 'kk', 'kl', 'km', 'kn', 'ko', 'ks', 'ku', 'ky', 'la', 'li', 'ln', 'lo', 'lt', 'lv', 'mg', 'mi', 'mk', 'ml', 'mn', 'mo', 'mr', 'ms', 'mt', 'my', 'na', 'ne', 'nl', 'no', 'oc', 'om', 'or', 'pa', 'pl', 'ps', 'pt', 'qu', 'rm', 'rn', 'ro', 'ru', 'rw', 'sa', 'sd', 'sg', 'sh', 'si', 'sk', 'sl', 'sm', 'sn', 'so', 'sq', 'sr', 'ss', 'st', 'su', 'sv', 'sw', 'ta', 'te', 'tg', 'th', 'ti', 'tk', 'tl', 'tn', 'to', 'tr', 'ts', 'tt', 'tw', 'ug', 'uk', 'ur', 'uz','vi', 'vo', 'wa', 'wo', 'xh', 'yi', 'ji', 'yo', 'zh', 'zu']
+    let langs = ['aa', 'ab', 'af', 'am', 'an', 'ar', 'as', 'ay', 'az', 'ba', 'be', 'bg', 'bh', 'bi', 'bn', 'bo', 'br', 'ca', 'co', 'cs', 'cy', 'da', 'de', 'dz', 'el', 'en', 'eo', 'es', 'et', 'eu', 'fa', 'fi', 'fj', 'fo', 'fr', 'fy', 'ga', 'gd', 'gl', 'gn', 'gu', 'gv', 'ha', 'he', 'iw', 'hi', 'hr', 'ht', 'hu', 'hy', 'ia', 'id', 'in', 'ie', 'ii', 'ik', 'io', 'is', 'it', 'iu', 'ja', 'jv', 'ka', 'kk', 'kl', 'km', 'kn', 'ko', 'ks', 'ku', 'ky', 'la', 'li', 'ln', 'lo', 'lt', 'lv', 'mg', 'mi', 'mk', 'ml', 'mn', 'mo', 'mr', 'ms', 'mt', 'my', 'na', 'ne', 'nl', 'no', 'oc', 'om', 'or', 'pa', 'pl', 'ps', 'pt', 'qu', 'rm', 'rn', 'ro', 'ru', 'rw', 'sa', 'sd', 'sg', 'sh', 'si', 'sk', 'sl', 'sm', 'sn', 'so', 'sq', 'sr', 'ss', 'st', 'su', 'sv', 'sw', 'ta', 'te', 'tg', 'th', 'ti', 'tk', 'tl', 'tn', 'to', 'tr', 'ts', 'tt', 'tw', 'ug', 'uk', 'ur', 'uz', 'vi', 'vo', 'wa', 'wo', 'xh', 'yi', 'ji', 'yo', 'zh', 'zu']
     message = data.text;
     test = message.replace('!перевод ', '').split(' ');
     lang = test.shift()
     message = test.join(' ').replace(lang, '');
-    if (langs.includes(lang) && message != '') {
-        translate.translate(message, {to: lang}, function (err, res) {
-            data.reply('Перевод: ' + res.text);
-        });
+    if (langs.includes(lang)) {
+        if (message != '') {
+            translate.translate(message, {to: lang}, function (err, res) {
+                data.reply('Перевод: ' + res.text);
+            });
+        } else data.reply('Укажите текст для перевода!')
     } else {
         data.reply('Укажите язык, на который надо перевести. Напимер: en, de. Список языков тут: https://snipp.ru/handbk/iso-639-1')
     }
