@@ -416,6 +416,27 @@ vk.updates.hear(/^!когда/i, data => {
     })
 })
 
+vk.updates.hear(/^!triggers/i, data => {
+    let user = data.senderId;
+    let peer = data.peerId;
+    connection.query("SELECT * FROM `admins` WHERE `peer` = ? AND `userid` = ? AND `status` = 5", [peer, user, perm[0].whenit], async function (err, crchk, f) {
+        if (crchk.length == 1) {
+            data.reply('!число - number \n !нг - newyear \n !орел и решка - orel \n !rand - rand \n !перевод - translate \n @everyone - everyone \n !kick - kick \n !id - idofuser \n !q - q \n /alive - alive \n !cid - cid \n !reg - reg \n !др - birthday \n !когда - whenit \n !ban - ban \n !unban - unban \n !что лучше - better \n !погода - weather \n !кикатьвышедших - exitkick \n !антимат - antimat \n !пред - warn \n !снять - unwarn \n !сколько - checkwarn \n !banlist  - banlist \n !warnlist - warnlist \b !addspec - addspec \n !remspec - remspec \n !admin - admin \n !unadmin - unadmin')
+        }
+    })
+})
+
+
+vk.updates.hear(/^!levels/i, data => {
+    let user = data.senderId;
+    let peer = data.peerId;
+    connection.query("SELECT * FROM `admins` WHERE `peer` = ? AND `userid` = ? AND `status` = 5", [peer, user, perm[0].whenit], async function (err, crchk, f) {
+        if (crchk.length == 1) {
+            data.reply('Пока-что доступны только следующие категории: \n 0 - Пользователь \n 3 - Администратор \n 4 - Спец.администратор \n 5 - Создатель')
+        }
+    })
+})
+
 vk.updates.hear(/^!settings/i, data => {
     let peer = data.peerId
     let commands = ['number', 'newyear', 'orel', 'rand', 'translate', 'everyone', 'kick', 'idofuser', 'q', 'alive', 'cid', 'reg', 'birthday', 'whenit', 'ban', 'unban', 'better', 'weather', 'exitkick', 'antimat', 'warn', 'unwarn', 'checkwarn', 'banlist', 'warnlist', 'addspec', 'remspec', 'admin', 'unadmin']
@@ -431,7 +452,7 @@ vk.updates.hear(/^!settings/i, data => {
             connection.query("SELECT * FROM `settings` WHERE `peer` = ?", [peer], async function (err, perm, f) {
                 let requestion = "UPDATE `settings` SET `" + setting + "` = ? WHERE `settings`.`id` = ?"
                 connection.query(requestion, [level, perm[0].id], async function (err, perm, f) {
-
+                    data.reply('Уровень прав для команды успешно назначен!')
                 })
             })
         } else data.reply('Укажите уровень прав, который необходимо установить команде! Список уровней прав и их триггеры можете получить при помощи команды !levels')
