@@ -439,26 +439,31 @@ vk.updates.hear(/^!levels/i, data => {
 
 vk.updates.hear(/^!settings/i, data => {
     let peer = data.peerId
-    let commands = ['number', 'newyear', 'orel', 'rand', 'translate', 'everyone', 'kick', 'idofuser', 'q', 'alive', 'cid', 'reg', 'birthday', 'whenit', 'ban', 'unban', 'better', 'weather', 'exitkick', 'antimat', 'warn', 'unwarn', 'checkwarn', 'banlist', 'warnlist', 'addspec', 'remspec', 'admin', 'unadmin']
-    let levels = [0, 1, 2, 3, 4, 5]
-    message = data.text;
-    test = message.replace('!settings ', '').split(' ');
-    setting = test.shift()
-    message = test.join(' ').replace(setting, '');
-    var level = parseInt(message)
-    if (commands.includes(setting)) {
-        console.log(level)
-        if (levels.includes(level)) {
-            connection.query("SELECT * FROM `settings` WHERE `peer` = ?", [peer], async function (err, perm, f) {
-                let requestion = "UPDATE `settings` SET `" + setting + "` = ? WHERE `settings`.`id` = ?"
-                connection.query(requestion, [level, perm[0].id], async function (err, perm, f) {
-                    data.reply('Уровень прав для команды успешно назначен!')
-                })
-            })
-        } else data.reply('Укажите уровень прав, который необходимо установить команде! Список уровней прав и их триггеры можете получить при помощи команды !levels')
-    } else {
-        data.reply('Укажите команду для которой надо настроить права, список команд и их триггеры можете получить используя команду !triggers')
-    }
+    let user = data.senderId;
+    connection.query("SELECT * FROM `admins` WHERE `peer` = ? AND `userid` = ? AND `status` = 5", [peer, user], async function (err, crchk, f) {
+        if (crchk.length == 1) {
+            let commands = ['number', 'newyear', 'orel', 'rand', 'translate', 'everyone', 'kick', 'idofuser', 'q', 'alive', 'cid', 'reg', 'birthday', 'whenit', 'ban', 'unban', 'better', 'weather', 'exitkick', 'antimat', 'warn', 'unwarn', 'checkwarn', 'banlist', 'warnlist', 'addspec', 'remspec', 'admin', 'unadmin']
+            let levels = [0, 1, 2, 3, 4, 5]
+            message = data.text;
+            test = message.replace('!settings ', '').split(' ');
+            setting = test.shift()
+            message = test.join(' ').replace(setting, '');
+            var level = parseInt(message)
+            if (commands.includes(setting)) {
+                console.log(level)
+                if (levels.includes(level)) {
+                    connection.query("SELECT * FROM `settings` WHERE `peer` = ?", [peer], async function (err, perm, f) {
+                        let requestion = "UPDATE `settings` SET `" + setting + "` = ? WHERE `settings`.`id` = ?"
+                        connection.query(requestion, [level, perm[0].id], async function (err, perm, f) {
+                            data.reply('Уровень прав для команды успешно назначен!')
+                        })
+                    })
+                } else data.reply('Укажите уровень прав, который необходимо установить команде! Список уровней прав и их триггеры можете получить при помощи команды !levels')
+            } else {
+                data.reply('Укажите команду для которой надо настроить права, список команд и их триггеры можете получить используя команду !triggers')
+            }
+        }
+    })
 })
 
 vk.updates.hear(/^!apply/i, data => {
