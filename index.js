@@ -292,8 +292,8 @@ vk.updates.hear(/^!id/i, data => {
     let user = data.senderId;
     let peer = data.peerId;
     connection.query("SELECT * FROM `settings` WHERE `peer` = ?", [peer], async function (err, perm, f) {
-        if (perm[0].id > 0){
-            connection.query("SELECT * FROM `admins` WHERE `peer` = ? AND `userid` = ? AND `status` >= ?", [peer, user, perm[0].id], async function (err, idchk, f) {
+        if (perm[0].idofuser > 0){
+            connection.query("SELECT * FROM `admins` WHERE `peer` = ? AND `userid` = ? AND `status` >= ?", [peer, user, perm[0].idofuser], async function (err, idchk, f) {
                 if (idchk.length == 1){
                     idcommand(data)
                 }
@@ -521,7 +521,7 @@ vk.updates.hear(/!что лучше/i, data => {
     let user = data.senderId;
     let peer = data.peerId;
     connection.query("SELECT * FROM `settings` WHERE `peer` = ?", [peer], async function (err, perm, f) {
-        if (perm[0].unban > 0){
+        if (perm[0].better > 0){
             connection.query("SELECT * FROM `admins` WHERE `peer` = ? AND `userid` = ? AND `status` >= ?", [peer, user, perm[0].better], async function (err, betterchk, f) {
                 if (betterchk.length == 1){
                     bettercommand(data)
