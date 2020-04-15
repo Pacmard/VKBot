@@ -7,6 +7,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const os = require('os');
 const fs = require('fs')
+var cmdsfnc = require('./funcmds.js')
 key = 'yandex translate token here'
 var translate = require('yandex-translate')(key)
 let v = 5.101
