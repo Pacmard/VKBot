@@ -1,4 +1,7 @@
 const { VK } = require('vk-io');
+const vk = new VK({
+    token: 'your VK token'
+});
 const axios = require('axios');
 const needle = require("needle");
 const parser = require('xml2json');
@@ -7,16 +10,20 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const os = require('os');
 const fs = require('fs')
-key = 'yandex translate token here'
-var translate = require('yandex-translate')(key)
-let v = 5.101
-let t1ken = 'enter your token here';
+let v = 5.124
+let t1ken = 'your VK token';
 var mysql = require('mysql');
 var connection = mysql.createConnection({
-    host     : 'localhost', // link to mysql database
-    user     : 'root', // username
-    password : 'smthpsswd', // password
-    database : 'links' // DB name
+    host     : 'localhost',
+    user     : 'root',
+    password : 'yourpasswd',
+    database : 'yourmaindb'
+});
+var stats = mysql.createConnection({
+    host     : 'localhost',
+    user     : 'root',
+    password : 'yourpasswd',
+    database : 'yourstatsdb'
 });
 connection.connect(function(err) {
     if (err) {
@@ -25,6 +32,14 @@ connection.connect(function(err) {
     }
 
     console.log('connected as id ' + connection.threadId);
+});
+stats.connect(function(err) {
+    if (err) {
+        console.error('error connecting: ' + err.stack);
+        return;
+    }
+
+    console.log('connected to stats as id ' + connection.threadId);
 });
 var commands = {
     banlistcommand: function (data) {
@@ -82,48 +97,11 @@ var commands = {
         let peer = data.peerId;
         let cid = data.peerId - 2e9
         let user = data.senderId;
-        let chatUsersReq = await api('messages.getConversationMembers', {access_token: t1ken, peer_id: peer, v: v})
-        let chatUsers = chatUsersReq.response.items
+        let chatUsersReq = await vk.api.messages.getConversationMembers({ peer_id: peer, access_token: t1ken, v: v });
+        let chatUsers = chatUsersReq.items
         let arr = chatUsers.map(el => el.member_id)
         let id = arr[getRandomInRange(0, arr.length - 1)];
         vk.api.messages.removeChatUser({chat_id: cid, member_id: id, access_token: t1ken, v: v});
-    },
-    translatecommand: function (data) {
-        let langs = ['aa', 'ab', 'af', 'am', 'an', 'ar', 'as', 'ay', 'az', 'ba', 'be', 'bg', 'bh', 'bi', 'bn', 'bo', 'br', 'ca', 'co', 'cs', 'cy', 'da', 'de', 'dz', 'el', 'en', 'eo', 'es', 'et', 'eu', 'fa', 'fi', 'fj', 'fo', 'fr', 'fy', 'ga', 'gd', 'gl', 'gn', 'gu', 'gv', 'ha', 'he', 'iw', 'hi', 'hr', 'ht', 'hu', 'hy', 'ia', 'id', 'in', 'ie', 'ii', 'ik', 'io', 'is', 'it', 'iu', 'ja', 'jv', 'ka', 'kk', 'kl', 'km', 'kn', 'ko', 'ks', 'ku', 'ky', 'la', 'li', 'ln', 'lo', 'lt', 'lv', 'mg', 'mi', 'mk', 'ml', 'mn', 'mo', 'mr', 'ms', 'mt', 'my', 'na', 'ne', 'nl', 'no', 'oc', 'om', 'or', 'pa', 'pl', 'ps', 'pt', 'qu', 'rm', 'rn', 'ro', 'ru', 'rw', 'sa', 'sd', 'sg', 'sh', 'si', 'sk', 'sl', 'sm', 'sn', 'so', 'sq', 'sr', 'ss', 'st', 'su', 'sv', 'sw', 'ta', 'te', 'tg', 'th', 'ti', 'tk', 'tl', 'tn', 'to', 'tr', 'ts', 'tt', 'tw', 'ug', 'uk', 'ur', 'uz', 'vi', 'vo', 'wa', 'wo', 'xh', 'yi', 'ji', 'yo', 'zh', 'zu']
-        message = data.text;
-        test = message.replace('!перевод ', '').split(' ');
-        lang = test.shift()
-        message = test.join(' ').replace(lang, '');
-        if (langs.includes(lang)) {
-            if (message != '') {
-                translate.translate(message, {to: lang}, function (err, res) {
-                    data.reply('Перевод: ' + res.text);
-                });
-            } else data.reply('Укажите текст для перевода!')
-        } else {
-            data.reply('Укажите язык, на который надо перевести. Напимер: en, de. Список языков тут: https://snipp.ru/handbk/iso-639-1')
-        }
-    },
-    everyonecommand: async function (data) {
-        let user1 = data.senderId;
-        let peer = data.peerId;
-        const regex = /^(?:@everyone).*?([\d]+).*?$/gm;
-        var str = data.text;
-        var str2 = str.replace(/@everyone/i, '')
-        let cid = data.peerId;
-        let uId = data.senderId;
-        let chatUsersReq = await vk.api.messages.getConversationMembers({access_token: t1ken, peer_id: cid, v: v})
-        let chatUsers = chatUsersReq.items
-        var mes;
-        let arr = chatUsers.map(el => el.member_id)
-        for (var i = 0; i < arr.length; i++) {
-            if (arr[i] > 0) {
-                mes += ' @id' + JSON.stringify(arr[i]) + '(&#8300;)'
-            } else mes += ' @club' + -JSON.stringify(arr[i]) + '(&#8300;)'
-        }
-        var text = String(mes).replace(/undefined/i, 'Объявление от ' + "@id" + uId + "(администратора)")
-        // var text = text.replace(/305738074/i, '1')
-        data.send(text)
     },
     kickcommand: function (data) {
         let user = data.senderId;
@@ -199,6 +177,7 @@ var commands = {
                         needle.get(`https://vk.com/foaf.php?id=${info.id}`, function (err, res) {
                             if (err) console.log(err)
                             let xml = res.body
+                            console.log(xml)
                             let out = JSON.parse(parser.toJson(xml))["rdf:RDF"]["foaf:Person"]["ya:created"]["dc:date"] // Дата регистрации страницы
 
                             let unixCreated = moment(out).unix()
@@ -212,6 +191,7 @@ var commands = {
                 needle.get(`https://vk.com/foaf.php?id=${data.message.from_id}`, function (err, res) {
                     if (err) console.log(err)
                     let xml = res.body
+                    console.log(xml)
                     let out = JSON.parse(parser.toJson(xml))["rdf:RDF"]["foaf:Person"]["ya:created"]["dc:date"] // Дата регистрации страницы
                     let unixCreated = moment(out).unix()
                     let tzReg = moment.unix(unixCreated).utcOffset(+3)
@@ -229,6 +209,7 @@ var commands = {
                             needle.get(`https://vk.com/foaf.php?id=${data.forwards[0].senderId}`, function (err, res) {
                                 if (err) console.log(err)
                                 let xml = res.body
+                                console.log(xml)
                                 let out = JSON.parse(parser.toJson(xml))["rdf:RDF"]["foaf:Person"]["ya:created"]["dc:date"] // Дата регистрации страницы
                                 let unixCreated = moment(out).unix()
                                 let tzReg = moment.unix(unixCreated).utcOffset(+3)
@@ -248,6 +229,7 @@ var commands = {
                             needle.get(`https://vk.com/foaf.php?id=${data.replyMessage.senderId}`, function (err, res) {
                                 if (err) console.log(err)
                                 let xml = res.body
+                                console.log(xml)
                                 let out = JSON.parse(parser.toJson(xml))["rdf:RDF"]["foaf:Person"]["ya:created"]["dc:date"] // Дата регистрации страницы
                                 let unixCreated = moment(out).unix()
                                 let tzReg = moment.unix(unixCreated).utcOffset(+3)
@@ -470,7 +452,7 @@ var commands = {
     weathercommand: function (data) {
         let message = data.text;
         let cityName = encodeURI(message.replace(/!погода /i, ''))
-        let weatherToken = "token from https://openweathermap.org/api"
+        let weatherToken = "your weather token"
         let url = "https://api.openweathermap.org/data/2.5/weather?&q=" + cityName + '&appid=' + weatherToken + '&lang=ru'
         axios.get(url)
             .then(res => {
@@ -571,7 +553,7 @@ var commands = {
                     } else {
                         if (alreadyadm[0].status < 3) {
                             connection.query("UPDATE `admins` SET `status` = '3' WHERE `admins`.`id` = ?;", [alreadyadm[0].id], function (error, result, fields) {
-                                data.replt('Пользователь успешно повышен до администратора!')
+                                data.reply('Пользователь успешно повышен до администратора!')
                             })
                         } else data.reply('Вы не можете понизить спец.администратора этой командой! Используйте !remspec перед тем как назначить его администратором!')
                     }
@@ -715,6 +697,191 @@ var commands = {
                 }
             }
         } else data.reply('Укажите пользователя, которому надо дать предупреждение!')
+    },
+    unmodercommand: function (data) {
+        let peer = data.peerId;
+        let user = data.senderId;
+        const regex = /^(?:!unmoder).*?([\d]+).*?$/gm;
+        const str = data.text;
+        const m = regex.exec(str);
+        if (m != null) {
+            const user_id = m[1];
+            if (user_id != user) {
+                connection.query("SELECT * FROM `admins` WHERE `peer` = ? AND `userid` = ? AND `status` = 1", [peer, user_id], async function (err, ress11, f) {
+                    if (ress11.length == 1) {
+                        connection.query("DELETE FROM `admins` WHERE `admins`.`id` = ?;", [ress11[0].id], async function (err, ress22, f) {
+                            data.reply('С пользователя успешно сняты права модератора!')
+                        })
+                    } else data.reply('Пользователь не является модератором!')
+                })
+            } else data.reply('Вы не можете снять права модератора с себя!')
+        } else data.reply('Упомяните пользователя с которого нужно снять права модератора!')
+    },
+    modercommand: function (data) {
+        let peer = data.peerId;
+        let user = data.senderId;
+        const regex = /^(?:!moder).*?([\d]+).*?$/gm;
+        const str = data.text;
+        const m = regex.exec(str);
+        if (m.length != null) {
+            const user_id = m[1];
+            if (user != user_id) {
+                connection.query("SELECT * FROM `admins` WHERE `peer` = ? AND `userid` = ?", [peer, user_id], function (err, alreadyadm, f) {
+                    if (alreadyadm.length == 0) {
+                        connection.query("INSERT INTO `admins` (`peer`, `userid`, `status`) VALUES (?, ?, ?);", [peer, user_id, 1], function (error, result, fields) {
+                            data.reply('Права модератора были успешно выданы!')
+                        })
+                    }
+                })
+            } else data.reply('Вы не можете выдать права модератора самому себе, вы и так владеете данными полномочиями.')
+        } else data.reply('Укажите пользователя, которому необходимо выдать права модератора через упоминание.')
+    },
+    unstmodercommand: function (data) {
+        let peer = data.peerId;
+        let user = data.senderId;
+        const regex = /^(?:!unstmoder).*?([\d]+).*?$/gm;
+        const str = data.text;
+        const m = regex.exec(str);
+        if (m != null) {
+            const user_id = m[1];
+            if (user_id != user) {
+                connection.query("SELECT * FROM `admins` WHERE `peer` = ? AND `userid` = ? AND `status` = 2", [peer, user_id], async function (err, ress11, f) {
+                    if (ress11.length == 1) {
+                        connection.query("DELETE FROM `admins` WHERE `admins`.`id` = ?;", [ress11[0].id], async function (err, ress22, f) {
+                            data.reply('С пользователя успешно сняты права ст.модератора!')
+                        })
+                    } else data.reply('Пользователь не является ст.модератором!')
+                })
+            } else data.reply('Вы не можете снять права с себя!')
+        } else data.reply('Упомяните пользователя с которого нужно снять права ст.модератора!')
+    },
+    stmodercommand: function (data) {
+        let peer = data.peerId;
+        let user = data.senderId;
+        const regex = /^(?:!stmoder).*?([\d]+).*?$/gm;
+        const str = data.text;
+        const m = regex.exec(str);
+        if (m.length != null) {
+            const user_id = m[1];
+            if (user != user_id) {
+                connection.query("SELECT * FROM `admins` WHERE `peer` = ? AND `userid` = ?", [peer, user_id], function (err, alreadyadm, f) {
+                    if (alreadyadm.length == 0) {
+                        connection.query("INSERT INTO `admins` (`peer`, `userid`, `status`) VALUES (?, ?, ?);", [peer, user_id, 2], function (error, result, fields) {
+                            data.reply('Права ст.модератора были успешно выданы!')
+                        })
+                    } else {
+                        if (alreadyadm[0].status < 2) {
+                            connection.query("UPDATE `admins` SET `status` = '2' WHERE `admins`.`id` = ?;", [alreadyadm[0].id], function (error, result, fields) {
+                                data.reply('Пользователь успешно повышен до ст.модератора!')
+                            })
+                        }
+                    }
+                })
+            } else data.reply('Вы не можете выдать права модератора самому себе, вы и так владеете данными полномочиями.')
+        } else data.reply('Укажите пользователя, которому необходимо выдать права модератора через упоминание.')
+    },
+    statscommand: async function (data) {
+        let peer = data.peerId;
+        let user = data.senderId;
+        stats.query("SELECT * FROM `users` WHERE `peer` = ? AND `userid` = ?", [peer, user], async function (err, userstable, f) {
+            stats.query("SELECT * FROM `messages` WHERE `peer` = ? AND `userid` = ?", [peer, user], async function (err, msgcount, f) {
+                connection.query("SELECT * FROM `warns` WHERE `peer` = ? AND `userid` = ?", [peer, user], async function (err, warns, f) {
+                    connection.query("SELECT * FROM `admins` WHERE `peer` = ? AND `userid` = ?", [peer, user], async function (err, rolecheck, f) {
+                        let userinfo = await vk.api.users.get({
+                            user_ids: user
+                        });
+                        let role
+                        let msgnumber
+                        let warnscount
+                        let dateadd = userstable[0].date
+                        let dating = new Date(dateadd * 1000);
+                        let datestamp = dating.toLocaleDateString("ru-RU")
+                        if (warns.length == 0) {
+                            warnscount = 0
+                        } else warnscount = warns[0].number
+                        if (msgcount.length == 0) {
+                            msgnumber = 0
+                        } else msgnumber = msgcount[0].count
+                        if (rolecheck.length == 0) {
+                            role = 'Пользователь'
+                        } else {
+                            if (rolecheck[0].status == 1) {
+                                role = 'Модератор'
+                            }
+                            if (rolecheck[0].status == 2) {
+                                role = 'Ст.Модератор'
+                            }
+                            if (rolecheck[0].status == 3) {
+                                role = 'Администратор'
+                            }
+                            if (rolecheck[0].status == 4) {
+                                role = 'Спец.Администратор'
+                            }
+                            if (rolecheck[0].status == 5) {
+                                role = 'Владелец'
+                            }
+                        }
+                        let msg = 'Статистика пользователя @id' + user + '(' + userinfo[0].first_name + ' ' + userinfo[0].last_name + ')\n\n Ник: ' + userstable[0].nickname + '\nРоль в беседе: ' + role + '\n\n💭Количество отправленных сообщений: ' + msgcount[0].count + '\n❗Количество варнов: ' + warnscount + '\n🕺Дата добавления в чат: ' + datestamp
+                        data.reply(msg)
+                    })
+                })
+            })
+        })
+    },
+    uploadstatscommand: async function (data) {
+        let peer = data.peerId;
+        let user = data.senderId;
+        let convusers = await vk.api.messages.getConversationMembers({
+            peer_id: peer
+        });
+        for (var i = 0; i < convusers.items.length; i++) {
+            let useradd = convusers.items[i].member_id
+            let joindate = convusers.items[i].join_date
+            stats.query("SELECT * FROM `users` WHERE `peer` = ? AND `userid` = ?", [peer, useradd], async function (err, isspec, f) {
+                if (isspec.length == 0) {
+                    stats.query("INSERT INTO `users` (`peer`, `userid`, `date`, `nickname`) VALUES (?, ?, ?, ?);", [peer, useradd, joindate, 'нет'], function (error, result, fields) {
+                    })
+                }
+            })
+        }
+    },
+    setnickcommand: async function (data) {
+        let peer = data.peerId;
+        let user = data.senderId;
+        if ((data.replyMessage != undefined) || (data.forwards.length != 0) || ((data.replyMessage == undefined) && (data.forwards.length == 0))) {
+            if ((data.forwards.length == 0) && (data.replyMessage != undefined)) {
+                let cid = data.peerId - 2e9;
+                let user_nicked = data.replyMessage.senderId;
+                setusernick(data, user_nicked)
+            } else if ((data.forwards.length != 0) && (data.replyMessage == undefined)) {
+                let cid = data.peerId - 2e9;
+                for (var i = 0; i < data.forwards.length; i++) {
+                    let user_nicked = data.forwards[i].senderId
+                    if (user_nicked > 1) {
+                        setusernick(data, user_nicked)
+                    }
+                }
+            }
+        } else data.reply('Укажите пользователя, которому надо дать предупреждение!')
+    },
+    remnickcommand: async function (data) {
+        let peer = data.peerId;
+        let user = data.senderId;
+        if ((data.replyMessage != undefined) || (data.forwards.length != 0) || ((data.replyMessage == undefined) && (data.forwards.length == 0))) {
+            if ((data.forwards.length == 0) && (data.replyMessage != undefined)) {
+                let cid = data.peerId - 2e9;
+                let user_nicked = data.replyMessage.senderId;
+                remusernick(data, user_nicked)
+            } else if ((data.forwards.length != 0) && (data.replyMessage == undefined)) {
+                let cid = data.peerId - 2e9;
+                for (var i = 0; i < data.forwards.length; i++) {
+                    let user_nicked = data.forwards[i].senderId
+                    if (user_nicked > 1) {
+                        remusernick(data, user_nicked)
+                    }
+                }
+            }
+        } else data.reply('Укажите пользователя, которому надо дать предупреждение!')
     }
 }
 
@@ -723,6 +890,28 @@ var dayname = ['день', 'дня', 'дней'];
 var hourname = ['час', 'часа', 'часов'];
 var minname = ['минута', 'минуты', 'минут'];
 var secname = ['секунда', 'секунды', 'секунд'];
+
+function setusernick(data, user_nicked) {
+    let peer = data.peerId;
+    let msg = data.text;
+    let nick = msg.replace(/!setnick /i, '')
+    stats.query("SELECT * FROM `users` WHERE `peer` = ? AND `userid` = ?", [peer, user_nicked], async function (err, userstable, f) {
+        stats.query("UPDATE `users` SET `nickname` = ? WHERE `users`.`id` = ?;", [nick, userstable[0].id], function (error, result, fields) {
+            data.reply('Новый ник успешно установлен!')
+        })
+    })
+}
+
+function remusernick(data, user_nicked) {
+    let peer = data.peerId;
+    let msg = data.text;
+    let nick = 'нет'
+    stats.query("SELECT * FROM `users` WHERE `peer` = ? AND `userid` = ?", [peer, user_nicked], async function (err, userstable, f) {
+        stats.query("UPDATE `users` SET `nickname` = ? WHERE `users`.`id` = ?;", [nick, userstable[0].id], function (error, result, fields) {
+            data.reply('Ник удален!')
+        })
+    })
+}
 
 function CheckNumber(number) {
     var number = number;
